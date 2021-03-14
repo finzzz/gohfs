@@ -1,11 +1,16 @@
 package main
 
+// TODO
+// sort button
+// log activity
+
 import(
 	"fmt"
 	"log"
 	"net/http"
 	"io/ioutil"
 	"flag"
+	"math"
 	"time"
 )
 
@@ -14,7 +19,7 @@ var port string
 var current_dir string
 
 func main(){
-	flag.StringVar(&host, "host", "127.0.0.1", "Host")
+	flag.StringVar(&host, "host", "0.0.0.0", "Host")
 	flag.StringVar(&port, "port", "8080", "Port")
 	flag.StringVar(&current_dir, "dir", ".", "Directory to serve")
 	flag.Parse()
@@ -32,10 +37,12 @@ func main(){
 func catch(w http.ResponseWriter, req *http.Request){
 	path := req.URL.Path
 
-	log.Printf("From: %s - %s %s", req.RemoteAddr, req.Method, current_dir + path)
-
-	if req.Method == "POST" {
+	if req.Method != "POST" {
+		log.Printf("From: %s - %s %s", req.RemoteAddr, req.Method, path[1:])
+	}else{
 		file, fileHeader, err := req.FormFile("file")
+		fsize, fbytes := parseSize(fileHeader.Size)
+		log.Printf("From: %s - %s %s  filename: %s  size: %g %s", req.RemoteAddr, req.Method, req.URL, fileHeader.Filename, fsize, fbytes)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -64,6 +71,69 @@ func catch(w http.ResponseWriter, req *http.Request){
 }
 
 func ls(w http.ResponseWriter, req *http.Request, dir string){
+	// header
+	fmt.Fprintf(w, `<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body {
+				font-family: arial, sans-serif;
+				font-weight: 300;
+				line-height: 1.625;
+				color: #555;
+				margin-left: 20px;
+			}
+			
+			table {
+				border-collapse: separate;
+				border-spacing: 0;
+				text-align: left;
+				box-sizing: content-box;
+				border-top: 1px solid #dee2e6;
+				border-bottom: 1px solid #111;
+				width: calc(100%% - 40px);
+			}
+			
+			a {
+				color: #007bff;
+				text-decoration: none;
+			}
+
+			th {
+				height: 20px;
+				border-bottom: 1px solid #111;
+				border-top: 1px solid #dee2e6;
+				padding-left: 20px;
+			}
+
+			td {
+				height: 30px;
+				border-top: 1px solid #dee2e6;
+				padding-left: 20px;
+			}
+
+			code {
+				background-color: #efefef;
+				padding-left: 0.5rem;
+				padding-right: 0.5rem;
+				padding-top: 0.15rem;
+				padding-bottom: 0.15rem;
+				border-radius: 0.3125rem;
+			}
+
+			button {
+				margin-left: 5px;
+			}
+
+			#upload {
+				padding-bottom: 40px;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Directory : %s</h2>
+	`, dir[:len(dir)-1])
+
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(w, "<h1>permission denied</h1>")
@@ -71,9 +141,40 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 		return
 	}
 
-	fmt.Fprintf(w, "<h2>Directory listing for %s</h2><hr>", dir)
-	fmt.Fprintf(w, "<form ENCTYPE=multipart/form-data method=post><input name=file type=\"file\"/><input type=submit value=\"upload\"/></form><hr>")
-	fmt.Fprintf(w, "<table>")
+	// upload
+	curl_cmd := "curl -F 'file=@uploadthis.txt' " + host + ":" + port
+	fmt.Fprintf(w, `
+		<div id=upload>
+			<div style="float: left;">
+				<form ENCTYPE=multipart/form-data id=upload-form method=post onclick=submitForm()>
+					<input name=file type="file"/>
+					<input type=submit value="upload"/>
+				</form>
+			</div>
+			<div style="float: right; margin-right: 40px">
+				<code>%s</code>
+				<button onclick=copyText()>copy</button>
+			</div>
+		</div>
+	`, curl_cmd)
+
+	// n items
+	fmt.Fprintf(w, `
+		<div style="float: right; margin-right: 40px">
+			%d items
+		</div>
+	`, len(files))
+
+	// table
+	fmt.Fprintf(w, `
+		<table id=filetable>
+			<tr>
+				<th onclick=sortTable(0)>Name</th>
+				<th onclick=sortTable(1)>Type</th>
+				<th>Size</th>
+				<th>Last Modified</th>
+			</tr>
+	`)
 
     for _, file := range files {
 		file_name := file.Name()
@@ -81,16 +182,89 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 			file_name += "/"
 		}
 
-		fmt.Fprintf(w, "<tr>")
-		fmt.Fprintf(w, "<td><a href=\"%s\">%s<a></td>", file_name, file_name)
+		fmt.Fprintf(w, `
+			<tr>
+				<td><a href="%s">%s<a></td>`, file_name, file_name)
 
 		if ! file.IsDir(){
-			fmt.Fprintf(w, "<td align=\"right\">%d B</td>", file.Size())
-			fmt.Fprintf(w, "<td align=\"right\">%s</td>", file.ModTime().Format(time.RFC1123))
+			fsize, suffix := parseSize(file.Size())
+			fmt.Fprintf(w, `
+				<td>File</td>
+				<td>%g %s</td>`, fsize, suffix)
+		}else {
+			fmt.Fprintf(w, `
+				<td>Directory</td>
+				<td>--</td>`)
 		}
 
-		fmt.Fprintf(w, "</tr>")
+		fmt.Fprintf(w, `
+				<td>%s</td>
+			</tr>
+			`, file.ModTime().Format(time.RFC1123))
 	}
 	
-	fmt.Fprintf(w, "</table>")
+	fmt.Fprintf(w, `
+		</table>
+	<script>
+		function submitForm() {
+			var f = document.getElementsByName('upload-form')[0];
+			f.submit();
+			f.reset();
+		}
+
+		function copyText() {
+			const tmp = document.createElement('textarea');
+			tmp.value = "%s";
+			document.body.appendChild(tmp);
+			tmp.select();
+			document.execCommand('copy');
+			document.body.removeChild(tmp);
+		}
+
+		function sortTable(idx) {
+			var table, rows, switching, i, x, y, shouldSwitch;
+			table = document.getElementById("filetable");
+			switching = true;
+			while (switching) {
+				switching = false;
+				rows = table.rows;
+				for (i = 1; i < (rows.length - 1); i++) {
+					shouldSwitch = false;
+					x = rows[i].getElementsByTagName("TD")[idx];
+					y = rows[i + 1].getElementsByTagName("TD")[idx];
+
+					// comparison here
+					if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+						shouldSwitch = true;
+						break;
+					}
+				}
+				if (shouldSwitch) {
+					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+					switching = true;
+				}
+			}
+		}
+	</script>
+	</body>
+</html>
+`, curl_cmd)
+
+}
+
+func parseSize(s int64) (float64, string){
+	suffix := []string{"B","KB","MB","GB","TB"}
+	var i int
+
+	val := float64(s)
+	for i=0;i<len(suffix);i++ {
+		if val < 1024 {
+			break
+		}
+		val = val / 1024
+	}
+
+	val = math.Round(val*100)/100
+
+	return val, suffix[i]
 }
