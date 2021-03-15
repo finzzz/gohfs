@@ -1,16 +1,17 @@
 package main
 
 // TODO
-// sort button
-// log activity
+// auth??
 
 import(
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"io/ioutil"
 	"flag"
 	"math"
+	"strings"
 	"time"
 )
 
@@ -106,6 +107,14 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 				padding-left: 20px;
 			}
 
+			th:hover span {
+				display:none;
+			}
+
+			th:hover:before {
+				content: "sort";
+			}
+
 			td {
 				height: 30px;
 				border-top: 1px solid #dee2e6;
@@ -119,14 +128,15 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 				padding-top: 0.15rem;
 				padding-bottom: 0.15rem;
 				border-radius: 0.3125rem;
-			}
-
-			button {
-				margin-left: 5px;
+				margin-right: 5px;
 			}
 
 			#upload {
 				padding-bottom: 40px;
+			}
+
+			.sort {
+				display:none;
 			}
 		</style>
 	</head>
@@ -141,8 +151,14 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 		return
 	}
 
+	var ip string
+	if strings.Split(req.Host,":")[0] != "0.0.0.0" {
+		ip = strings.Split(req.Host,":")[0]
+	} else {
+		ip = getIP()
+	}
+
 	// upload
-	curl_cmd := "curl -F 'file=@uploadthis.txt' " + host + ":" + port
 	fmt.Fprintf(w, `
 		<div id=upload>
 			<div style="float: left;">
@@ -152,11 +168,11 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 				</form>
 			</div>
 			<div style="float: right; margin-right: 40px">
-				<code>%s</code>
+				<code id=uploadcmd>curl -F 'file=@uploadthis.txt' %s:%s</code>
 				<button onclick=copyText()>copy</button>
 			</div>
 		</div>
-	`, curl_cmd)
+	`, ip, port)
 
 	// n items
 	fmt.Fprintf(w, `
@@ -169,10 +185,10 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 	fmt.Fprintf(w, `
 		<table id=filetable>
 			<tr>
-				<th onclick=sortTable(0)>Name</th>
-				<th onclick=sortTable(1)>Type</th>
-				<th>Size</th>
-				<th>Last Modified</th>
+				<th onclick=sortTable(0)><span>Name</span></th>
+				<th onclick=sortTable(1)><span>Type</span></th>
+				<th onclick=sortTable(3,"num")><span>Size</span></th>
+				<th onclick=sortTable(5,"date")><span>Last Modified</span></th>
 			</tr>
 	`)
 
@@ -184,27 +200,34 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 
 		fmt.Fprintf(w, `
 			<tr>
-				<td><a href="%s">%s<a></td>`, file_name, file_name)
+				<td><a href="%s">%s</a></td>`, file_name, file_name)
 
 		if ! file.IsDir(){
 			fsize, suffix := parseSize(file.Size())
 			fmt.Fprintf(w, `
 				<td>File</td>
-				<td>%g %s</td>`, fsize, suffix)
+				<td>%g %s</td>
+				<td style="display: none;">%d</td>`, fsize, suffix, file.Size())
 		}else {
 			fmt.Fprintf(w, `
 				<td>Directory</td>
-				<td>--</td>`)
+				<td>--</td>
+				<td style="display: none;">-1</td>`)
 		}
 
 		fmt.Fprintf(w, `
 				<td>%s</td>
+				<td style="display: none;">%s</td>
 			</tr>
-			`, file.ModTime().Format(time.RFC1123))
+			`, file.ModTime().Format(time.RFC1123), file.ModTime().Format(time.RFC3339))
 	}
 	
 	fmt.Fprintf(w, `
 		</table>
+		<p class=sort id=th_0>1</p>
+		<p class=sort id=th_1>1</p>
+		<p class=sort id=th_3>1</p>
+		<p class=sort id=th_5>1</p>
 	<script>
 		function submitForm() {
 			var f = document.getElementsByName('upload-form')[0];
@@ -214,16 +237,17 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 
 		function copyText() {
 			const tmp = document.createElement('textarea');
-			tmp.value = "%s";
+			tmp.value = (document.getElementById("uploadcmd")).innerHTML;
 			document.body.appendChild(tmp);
 			tmp.select();
 			document.execCommand('copy');
 			document.body.removeChild(tmp);
 		}
 
-		function sortTable(idx) {
-			var table, rows, switching, i, x, y, shouldSwitch;
+		function sortTable(idx, type) {
+			var table, rows, switching, i, x, y, shouldSwitch, sortorder;
 			table = document.getElementById("filetable");
+			sortorder = document.getElementById("th_" + idx);
 			switching = true;
 			while (switching) {
 				switching = false;
@@ -234,9 +258,38 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 					y = rows[i + 1].getElementsByTagName("TD")[idx];
 
 					// comparison here
-					if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-						shouldSwitch = true;
-						break;
+					if (type == "num") {
+						if (Number(x.innerHTML) > Number(y.innerHTML) && sortorder.innerHTML > 0) {
+							shouldSwitch = true;
+							break;
+						}
+						
+						if (Number(x.innerHTML) < Number(y.innerHTML) && sortorder.innerHTML < 0) {
+							shouldSwitch = true;
+							break;
+						}
+					} else if (type == "date"){
+						x = new Date(x.innerHTML);
+						y = new Date(y.innerHTML);
+						if (x > y && sortorder.innerHTML > 0) {
+							shouldSwitch = true;
+							break;
+						}
+						
+						if (x < y && sortorder.innerHTML < 0) {
+							shouldSwitch = true;
+							break;
+						}
+					} else {
+						if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && sortorder.innerHTML > 0) {
+							shouldSwitch = true;
+							break;
+						}
+
+						if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && sortorder.innerHTML < 0) {
+							shouldSwitch = true;
+							break;
+						}
 					}
 				}
 				if (shouldSwitch) {
@@ -244,12 +297,12 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 					switching = true;
 				}
 			}
+			sortorder.innerHTML = Number(sortorder.innerHTML) * -1;
 		}
 	</script>
 	</body>
-</html>
-`, curl_cmd)
-
+</html>`)
+		
 }
 
 func parseSize(s int64) (float64, string){
@@ -267,4 +320,21 @@ func parseSize(s int64) (float64, string){
 	val = math.Round(val*100)/100
 
 	return val, suffix[i]
+}
+
+func getIP() (string) {
+	if host != "0.0.0.0" {
+		return host
+	}
+
+    netInterfaceAddresses, _ := net.InterfaceAddrs()
+
+    for _, netInterfaceAddress := range netInterfaceAddresses {
+        networkIp, ok := netInterfaceAddress.(*net.IPNet)
+        if ok && !networkIp.IP.IsLoopback() && networkIp.IP.To4() != nil {
+            return networkIp.IP.String()
+        }
+    }
+
+    return "IP"
 }
