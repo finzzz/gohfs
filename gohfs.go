@@ -1,8 +1,5 @@
 package main
 
-// TODO
-// auth??
-
 import(
 	"fmt"
 	"log"
