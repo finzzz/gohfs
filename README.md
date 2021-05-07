@@ -26,3 +26,8 @@ chmod +x gohfs
 # getting help
 ./gohfs -h
 ```
+
+# TODO
+- [ ] disable directory listing option
+- [ ] https support
+- [ ] add authentication

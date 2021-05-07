@@ -1,0 +1,63 @@
+{{ define "CSS" }}
+body {
+    font-family: arial, sans-serif;
+    font-weight: 300;
+    line-height: 1.625;
+    color: #555;
+    margin-left: 20px;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+    box-sizing: content-box;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #111;
+    width: calc(100% - 40px);
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+th {
+    height: 20px;
+    border-bottom: 1px solid #111;
+    border-top: 1px solid #dee2e6;
+    padding-left: 20px;
+}
+
+th:hover span {
+    display:none;
+}
+
+th:hover:before {
+    content: "sort";
+}
+
+td {
+    height: 30px;
+    border-top: 1px solid #dee2e6;
+    padding-left: 20px;
+}
+
+code {
+    background-color: #efefef;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+    border-radius: 0.3125rem;
+    margin-right: 5px;
+}
+
+#upload {
+    padding-bottom: 40px;
+}
+
+.sort {
+    display:none;
+}
+{{ end }}

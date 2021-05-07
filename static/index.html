@@ -1,0 +1,52 @@
+{{ define "index" }}
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			{{template "CSS"}}
+		</style>
+	</head>
+	<body>
+		<h2>Directory : {{.Dir}}</h2>
+		<div id=upload>
+			<div style="float: left;">
+				<form ENCTYPE=multipart/form-data id=upload-form method=post onclick=submitForm()>
+					<input name=file type="file"/>
+					<input type=submit value="upload"/>
+				</form>
+			</div>
+			<div style="float: right; margin-right: 40px">
+				<code id=uploadcmd>curl -F 'file=@uploadthis.txt' {{.IP}}:{{.Port}}</code>
+				<button onclick=copyText()>copy</button>
+			</div>
+		</div>
+		<div style="float: right; margin-right: 40px">
+  			{{.NItems}} items
+		</div>
+		<table id=filetable>
+			<tr>
+				<th onclick=sortTable(0)><span>Name</span></th>
+				<th onclick=sortTable(1)><span>Type</span></th>
+				<th onclick=sortTable(3,1)><span>Size</span></th>
+				<th onclick=sortTable(5,2)><span>Last Modified</span></th>
+			</tr>
+            
+            {{range .Items}}
+            <tr>
+				<td><a href="{{.Name}}">{{.Name}}</a></td>
+                <td>{{.Type}}</td><td>{{.Size}}</td><td style="display: none;">{{.RawSize}}</td>
+                <td>{{.ModTime}}</td><td style="display: none;">{{.RawModTime}}</td>
+			</tr>
+            {{end}}
+
+		</table>
+		<p class=sort id=th_0>1</p>
+		<p class=sort id=th_1>1</p>
+		<p class=sort id=th_3>1</p>
+		<p class=sort id=th_5>1</p>
+	<script>
+        {{ template "JS" }}
+	</script>
+	</body>
+</html>
+{{ end }}

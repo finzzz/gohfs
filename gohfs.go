@@ -9,12 +9,34 @@ import(
 	"flag"
 	"math"
 	"strings"
+    "strconv"
 	"time"
+	"embed"
+	"html/template"
 )
 
+//go:embed static/*
+var static embed.FS
 var host string
 var port string
 var current_dir string
+
+type Templ struct {
+	Dir 		string
+	IP			string
+	Port		string
+	Items		[]Item
+	NItems		string
+}
+
+type Item struct {
+	Name		string
+	Type		string
+	Size		string
+	RawSize		string
+	ModTime		string
+	RawModTime	string
+}
 
 func main(){
 	flag.StringVar(&host, "host", "0.0.0.0", "Host")
@@ -31,7 +53,7 @@ func main(){
 	fmt.Printf("Serving HTTP on %s port %s (http://%s:%s/) ...\n", host, port, host, port)
 	log.Fatal(http_server.ListenAndServe()) 
 }
-	
+
 func catch(w http.ResponseWriter, req *http.Request){
 	path := req.URL.Path
 
@@ -69,78 +91,7 @@ func catch(w http.ResponseWriter, req *http.Request){
 }
 
 func ls(w http.ResponseWriter, req *http.Request, dir string){
-	// header
-	fmt.Fprintf(w, `<!DOCTYPE html>
-<html>
-	<head>
-		<style>
-			body {
-				font-family: arial, sans-serif;
-				font-weight: 300;
-				line-height: 1.625;
-				color: #555;
-				margin-left: 20px;
-			}
-			
-			table {
-				border-collapse: separate;
-				border-spacing: 0;
-				text-align: left;
-				box-sizing: content-box;
-				border-top: 1px solid #dee2e6;
-				border-bottom: 1px solid #111;
-				width: calc(100%% - 40px);
-			}
-			
-			a {
-				color: #007bff;
-				text-decoration: none;
-			}
-
-			th {
-				height: 20px;
-				border-bottom: 1px solid #111;
-				border-top: 1px solid #dee2e6;
-				padding-left: 20px;
-			}
-
-			th:hover span {
-				display:none;
-			}
-
-			th:hover:before {
-				content: "sort";
-			}
-
-			td {
-				height: 30px;
-				border-top: 1px solid #dee2e6;
-				padding-left: 20px;
-			}
-
-			code {
-				background-color: #efefef;
-				padding-left: 0.5rem;
-				padding-right: 0.5rem;
-				padding-top: 0.15rem;
-				padding-bottom: 0.15rem;
-				border-radius: 0.3125rem;
-				margin-right: 5px;
-			}
-
-			#upload {
-				padding-bottom: 40px;
-			}
-
-			.sort {
-				display:none;
-			}
-		</style>
-	</head>
-	<body>
-		<h2>Directory : %s</h2>
-	`, dir[:len(dir)-1])
-
+    // check permission
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(w, "<h1>permission denied</h1>")
@@ -148,6 +99,7 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 		return
 	}
 
+    // get host ip
 	var ip string
 	if strings.Split(req.Host,":")[0] != "0.0.0.0" {
 		ip = strings.Split(req.Host,":")[0]
@@ -155,151 +107,41 @@ func ls(w http.ResponseWriter, req *http.Request, dir string){
 		ip = getIP()
 	}
 
-	// upload
-	fmt.Fprintf(w, `
-		<div id=upload>
-			<div style="float: left;">
-				<form ENCTYPE=multipart/form-data id=upload-form method=post onclick=submitForm()>
-					<input name=file type="file"/>
-					<input type=submit value="upload"/>
-				</form>
-			</div>
-			<div style="float: right; margin-right: 40px">
-				<code id=uploadcmd>curl -F 'file=@uploadthis.txt' %s:%s</code>
-				<button onclick=copyText()>copy</button>
-			</div>
-		</div>
-	`, ip, port)
+	index, _ := template.ParseFS(static, "static/*")
 
-	// n items
-	fmt.Fprintf(w, `
-		<div style="float: right; margin-right: 40px">
-			%d items
-		</div>
-	`, len(files))
-
-	// table
-	fmt.Fprintf(w, `
-		<table id=filetable>
-			<tr>
-				<th onclick=sortTable(0)><span>Name</span></th>
-				<th onclick=sortTable(1)><span>Type</span></th>
-				<th onclick=sortTable(3,"num")><span>Size</span></th>
-				<th onclick=sortTable(5,"date")><span>Last Modified</span></th>
-			</tr>
-	`)
+	templ := Templ{
+        Dir	    : dir[:len(dir)-1],
+        IP      : ip,
+        Port    : port,
+        NItems  : strconv.Itoa(len(files)),
+    }
 
     for _, file := range files {
-		file_name := file.Name()
+        tmp := Item{
+            Name: file.Name(),
+            ModTime: file.ModTime().Format(time.RFC1123),
+            RawModTime: file.ModTime().Format(time.RFC3339),
+        }
+
 		if file.IsDir() {
-			file_name += "/"
-		}
+            tmp.Type = "Directory"
+            tmp.Size = "--"
+            tmp.RawSize = "-1"
+		} else {
+            fsize, suffix := parseSize(file.Size())
 
-		fmt.Fprintf(w, `
-			<tr>
-				<td><a href="%s">%s</a></td>`, file_name, file_name)
+            tmp.Type = "File"
+            tmp.Size = strconv.FormatFloat(fsize, 'f', 1, 64) + " " + suffix
+            tmp.RawSize = strconv.FormatInt(file.Size(), 10)
+        }
 
-		if ! file.IsDir(){
-			fsize, suffix := parseSize(file.Size())
-			fmt.Fprintf(w, `
-				<td>File</td>
-				<td>%g %s</td>
-				<td style="display: none;">%d</td>`, fsize, suffix, file.Size())
-		}else {
-			fmt.Fprintf(w, `
-				<td>Directory</td>
-				<td>--</td>
-				<td style="display: none;">-1</td>`)
-		}
+        templ.Items = append(templ.Items, tmp)
+    }
 
-		fmt.Fprintf(w, `
-				<td>%s</td>
-				<td style="display: none;">%s</td>
-			</tr>
-			`, file.ModTime().Format(time.RFC1123), file.ModTime().Format(time.RFC3339))
-	}
-	
-	fmt.Fprintf(w, `
-		</table>
-		<p class=sort id=th_0>1</p>
-		<p class=sort id=th_1>1</p>
-		<p class=sort id=th_3>1</p>
-		<p class=sort id=th_5>1</p>
-	<script>
-		function submitForm() {
-			var f = document.getElementsByName('upload-form')[0];
-			f.submit();
-			f.reset();
-		}
-
-		function copyText() {
-			const tmp = document.createElement('textarea');
-			tmp.value = (document.getElementById("uploadcmd")).innerHTML;
-			document.body.appendChild(tmp);
-			tmp.select();
-			document.execCommand('copy');
-			document.body.removeChild(tmp);
-		}
-
-		function sortTable(idx, type) {
-			var table, rows, switching, i, x, y, shouldSwitch, sortorder;
-			table = document.getElementById("filetable");
-			sortorder = document.getElementById("th_" + idx);
-			switching = true;
-			while (switching) {
-				switching = false;
-				rows = table.rows;
-				for (i = 1; i < (rows.length - 1); i++) {
-					shouldSwitch = false;
-					x = rows[i].getElementsByTagName("TD")[idx];
-					y = rows[i + 1].getElementsByTagName("TD")[idx];
-
-					// comparison here
-					if (type == "num") {
-						if (Number(x.innerHTML) > Number(y.innerHTML) && sortorder.innerHTML > 0) {
-							shouldSwitch = true;
-							break;
-						}
-						
-						if (Number(x.innerHTML) < Number(y.innerHTML) && sortorder.innerHTML < 0) {
-							shouldSwitch = true;
-							break;
-						}
-					} else if (type == "date"){
-						x = new Date(x.innerHTML);
-						y = new Date(y.innerHTML);
-						if (x > y && sortorder.innerHTML > 0) {
-							shouldSwitch = true;
-							break;
-						}
-						
-						if (x < y && sortorder.innerHTML < 0) {
-							shouldSwitch = true;
-							break;
-						}
-					} else {
-						if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && sortorder.innerHTML > 0) {
-							shouldSwitch = true;
-							break;
-						}
-
-						if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && sortorder.innerHTML < 0) {
-							shouldSwitch = true;
-							break;
-						}
-					}
-				}
-				if (shouldSwitch) {
-					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-					switching = true;
-				}
-			}
-			sortorder.innerHTML = Number(sortorder.innerHTML) * -1;
-		}
-	</script>
-	</body>
-</html>`)
-		
+    err = index.ExecuteTemplate(w, "index", templ)
+    if err != nil {
+        fmt.Println(err)
+    }
 }
 
 func parseSize(s int64) (float64, string){
