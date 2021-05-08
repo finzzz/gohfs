@@ -2,9 +2,6 @@
 Golang implementation of simple HTTP server with upload feature.  
 
 ![](ss.png)
-
-This application is intended to replace python built-in module simple HTTP server.  
-To get started with this app, simply download the binary in the `releases` folder.  
   
 # Installation
 ```bash
@@ -18,14 +15,14 @@ chmod +x gohfs
 ./gohfs
 
 # specifying parameters
-./gohfs -host 127.0.0.1 -port 8081 -dir /tmp
+./gohfs -host 127.0.0.1 -port 8081 -dir /tmp -hide
 
 # getting help
 ./gohfs -h
 ```
 
 # TODO
-- [ ] disable directory listing option
+- [x] disable directory listing option
 - [ ] https support
 - [ ] add authentication
 - [ ] verbose logging
