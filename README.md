@@ -1,14 +1,8 @@
 # GoHFS
-Feature Rich Simple HTTP Server
+Feature-rich Simple HTTP Server
 
 ![](ss.png)
   
-# Installation
-```bash
-wget -O gohfs https://github.com/finzzz/gohfs/raw/master/releases/gohfs-linux-amd64
-chmod +x gohfs
-```
-
 # Getting started
 ```bash
 # running in current directory
@@ -29,8 +23,10 @@ chmod +x gohfs
 ```
 
 # TODO
-- [x] disable directory listing option
 - [ ] https support
-- [x] add authentication
+- [ ] show QR link
 - [ ] verbose logging
+- [ ] split gohfs.go into smaller modules
+- [x] disable directory listing option
+- [x] add authentication
 - [x] download file/folder as zip
