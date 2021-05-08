@@ -12,6 +12,7 @@ import(
 	"math"
 	"strings"
     "strconv"
+	"crypto/sha256"
 	"time"
 	"embed"
 	"html/template"
@@ -25,6 +26,9 @@ type Config struct {
 	Host			string
 	Port			string
 	Dir				string
+	User			string
+	Pass			string
+	HashedPass		string
 	Hide			bool
 }
 
@@ -48,11 +52,18 @@ type Item struct {
 func main(){
 	flag.StringVar(&config.Host, "host", "0.0.0.0", "Host")
 	flag.StringVar(&config.Port, "port", "8080", "Port")
+	flag.StringVar(&config.User, "user", "admin", "Username")
+	flag.StringVar(&config.Pass, "pass", "", "Password")
+	flag.StringVar(&config.HashedPass, "hpass", "", "Hashed Password (sha-256)")
 	flag.StringVar(&config.Dir, "dir", ".", "Directory to serve")
 	flag.BoolVar(&config.Hide, "hide", false, "Disable Listing")
 	flag.Parse()
 
-	http_handler := http.HandlerFunc(handler)
+	if config.Pass != "" && config.HashedPass != "" {
+		log.Fatal(`Can only define either "Password" or "Hashed Password"`)
+	}
+
+	http_handler := http.HandlerFunc(authHandler(handler))
     http_server := &http.Server{
             Addr:           config.Host + ":" + config.Port,
             Handler:        http_handler,
@@ -62,12 +73,46 @@ func main(){
 	log.Fatal(http_server.ListenAndServe()) 
 }
 
+func authHandler(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, pass, _ := r.BasicAuth()
+		if !checkAuth(user, pass) {
+			w.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		}
+
+		f(w, r)
+	}
+}
+
+func checkAuth(user, pass string) (bool) {
+	var p, ipass string
+
+	if config.Pass == "" && config.HashedPass == "" {
+		return true // doesn't have auth
+	}
+
+	if config.Pass != "" {
+		p = config.Pass
+		ipass = pass
+	} else {
+		p = config.HashedPass
+		ipass = fmt.Sprintf("%x", sha256.Sum256([]byte(pass)))
+	}
+
+	if strings.Compare(config.User, user) == 0 && strings.Compare(p, ipass) == 0 {
+		return true
+	}
+
+	return false
+}
+
 func handler(w http.ResponseWriter, r *http.Request){
 	if r.Method == "POST" {
 		if isDirPath(string(r.RequestURI)) {
 			uploadHandler(w, r)
 		} else {
-			fmt.Println("Invalid")
+			fmt.Fprintln(w, "Invalid")
 		}
 	} else {
 		log.Printf("From: %s - %s %s", r.RemoteAddr, r.Method, r.URL)
