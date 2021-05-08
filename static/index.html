@@ -29,6 +29,7 @@
 				<th onclick=sortTable(1)><span>Type</span></th>
 				<th onclick=sortTable(3,1)><span>Size</span></th>
 				<th onclick=sortTable(5,2)><span>Last Modified</span></th>
+				<th align="center"><span>Download</span></th>
 			</tr>
             
             {{range .Items}}
@@ -36,6 +37,7 @@
 				<td><a href="{{.Name}}">{{.Name}}</a></td>
                 <td>{{.Type}}</td><td>{{.Size}}</td><td style="display: none;">{{.RawSize}}</td>
                 <td>{{.ModTime}}</td><td style="display: none;">{{.RawModTime}}</td>
+				<td align="center"><a href="{{.ZipURL}}">zip</a></td>
 			</tr>
             {{end}}
 

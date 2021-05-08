@@ -10,12 +10,14 @@ import(
 	"os"
 	"flag"
 	"math"
+	"math/rand"
 	"strings"
     "strconv"
 	"crypto/sha256"
 	"time"
 	"embed"
 	"html/template"
+	"archive/zip"
 )
 
 //go:embed static/*
@@ -29,6 +31,7 @@ type Config struct {
 	User			string
 	Pass			string
 	HashedPass		string
+	ZipPath			string
 	Hide			bool
 }
 
@@ -44,6 +47,7 @@ type Item struct {
 	Name			string
 	Type			string
 	Size			string
+	ZipURL			string
 	RawSize			string
 	ModTime			string
 	RawModTime		string
@@ -55,6 +59,7 @@ func main(){
 	flag.StringVar(&config.User, "user", "admin", "Username")
 	flag.StringVar(&config.Pass, "pass", "", "Password")
 	flag.StringVar(&config.HashedPass, "hpass", "", "Hashed Password (sha-256)")
+	flag.StringVar(&config.ZipPath, "zippath", "/gohfs-zip", "Directory to serve")
 	flag.StringVar(&config.Dir, "dir", ".", "Directory to serve")
 	flag.BoolVar(&config.Hide, "hide", false, "Disable Listing")
 	flag.Parse()
@@ -108,21 +113,26 @@ func checkAuth(user, pass string) (bool) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request){
-	if r.Method == "POST" {
-		if isDirPath(string(r.RequestURI)) {
-			uploadHandler(w, r)
-		} else {
-			fmt.Fprintln(w, "Invalid")
-		}
+	if r.Method == "POST" && isDirPath(string(r.RequestURI)){
+		uploadHandler(w, r)
 	} else {
 		log.Printf("From: %s - %s %s", r.RemoteAddr, r.Method, r.URL)
+	}
+
+	if strings.HasPrefix(r.RequestURI, config.ZipPath) {
+		z := zipWrite(config.Dir + strings.TrimPrefix(r.RequestURI, config.ZipPath))
+
+		w.Header().Set("Content-Disposition", "attachment; filename=" + basename(r.RequestURI) + ".zip")
+		http.ServeFile(w, r, z)
+		_ = os.Remove(z)
+		return
 	}
 
 	if isDirPath(string(r.RequestURI)) {
 		listingHandler(w, r)
 		return
 	}
-	
+
 	http.ServeFile(w, r, config.Dir + r.RequestURI)
 }
 
@@ -199,6 +209,7 @@ func parseSize(s int64) (float64, string){
 func parseItem(info fs.FileInfo) Item {
 	tmp := Item{
 		Name: info.Name(),
+		ZipURL: config.ZipPath + "/" + info.Name(),
 		ModTime: info.ModTime().Format(time.RFC1123),
 		RawModTime: info.ModTime().Format(time.RFC3339),
 	}
@@ -207,6 +218,7 @@ func parseItem(info fs.FileInfo) Item {
 		tmp.Type = "Directory"
 		tmp.Size = "--"
 		tmp.RawSize = "-1"
+		tmp.ZipURL += "/"
 	} else {
 		fsize, suffix := parseSize(info.Size())
 
@@ -241,4 +253,87 @@ func isDirPath(s string) (bool) {
 	}
 
 	return false
+}
+
+func randStr(n int) string {
+	rand.Seed(time.Now().UnixNano())
+
+	letters := []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    b := make([]rune, n)
+    for i := range b {
+        b[i] = letters[rand.Intn(len(letters))]
+    }
+    return string(b)
+}
+
+func zipWrite(s string) (string) {
+	tmpZip := randStr(12) + ".zip"
+
+    outFile, err := os.Create(tmpZip)
+    if err != nil {
+        log.Println(err)
+    }
+    defer outFile.Close()
+
+    w := zip.NewWriter(outFile)
+
+	if isDirPath(s) {
+		zipAdd(w, s, "")
+	} else {
+		zipFile(w, s)
+	}
+
+    if err != nil {
+        log.Println(err)
+    }
+
+    err = w.Close()
+    if err != nil {
+        log.Println(err)
+    }
+
+	return tmpZip
+}
+
+func zipAdd(w *zip.Writer, basePath, baseInZip string) {
+    files, err := os.ReadDir(basePath)
+    if err != nil {
+        log.Println(err)
+    }
+
+    for _, file := range files {
+        if !file.IsDir() {
+            zipFile(w, basePath + file.Name())
+        } else if file.IsDir(){
+            newBase := basePath + file.Name() + "/"
+            zipAdd(w, newBase, baseInZip  + file.Name() + "/")
+        }
+    }
+}
+
+func zipFile(w *zip.Writer, path string) {
+	dat, err := os.ReadFile(path)
+	if err != nil {
+		log.Println(err)
+	}
+
+	f, err := w.Create(path)
+	if err != nil {
+		log.Println(err)
+	}
+
+	_, err = f.Write(dat)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func basename(s string) (string){
+	splits := strings.Split(s, "/")
+
+	if isDirPath(s) {
+		return splits[len(splits)-2]
+	}
+	
+	return splits[len(splits)-1]
 }

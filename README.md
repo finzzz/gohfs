@@ -33,4 +33,4 @@ chmod +x gohfs
 - [ ] https support
 - [x] add authentication
 - [ ] verbose logging
-- [ ] download file/folder as zip
+- [x] download file/folder as zip
