@@ -1,5 +1,5 @@
 # GoHFS
-Golang implementation of simple HTTP server with upload feature.  
+Feature Rich Simple HTTP Server
 
 ![](ss.png)
   
