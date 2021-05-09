@@ -24,8 +24,9 @@ Feature-rich Simple HTTP Server
 
 # TODO
 - [ ] https support
-- [ ] show QR link
 - [ ] verbose logging
+- [ ] show version
+- [x] show QR link
 - [x] split gohfs.go into smaller modules
 - [x] disable directory listing option
 - [x] add authentication

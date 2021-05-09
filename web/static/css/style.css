@@ -21,6 +21,11 @@ a {
     text-decoration: none;
 }
 
+img {
+    margin: auto;
+    border: 10px solid white;
+}
+
 th {
     height: 20px;
     border-bottom: 1px solid #111;
@@ -52,10 +57,18 @@ code {
     margin-right: 5px;
 }
 
-#upload {
-    padding-bottom: 40px;
+.hide {
+    display:none;
 }
 
-.sort {
-    display:none;
+.qr {
+    text-align: center;
+}
+
+.qr:hover::before{
+    content: '';
+}
+
+#upload {
+    padding-bottom: 40px;
 }

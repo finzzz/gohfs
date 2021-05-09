@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/style.css">
+		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/modal.css">
 	</head>
 	<body>
 		<h2>Directory : {{.Dir}}</h2>
@@ -13,7 +14,7 @@
 				</form>
 			</div>
 			<div style="float: right; margin-right: 40px">
-				<code id=uploadcmd>curl -F 'file=@uploadthis.txt' {{.IP}}:{{.Port}}</code>
+				<code id=uploadcmd></code>
 				<button onclick=copyText()>copy</button>
 			</div>
 		</div>
@@ -22,25 +23,44 @@
 		</div>
 		<table id=filetable>
 			<tr>
-				<th onclick=sortTable(0)><span>Name</span></th>
-				<th onclick=sortTable(1)><span>Type</span></th>
-				<th onclick=sortTable(3,1)><span>Size</span></th>
-				<th onclick=sortTable(5,2)><span>Last Modified</span></th>
+				<th class=qr>QR</th>
+				<th id=th_name onclick="sortTable('name')"><span>Name</span></th>
+				<th id=th_type onclick="sortTable('type')"><span>Type</span></th>
+				<th id=th_size onclick="sortTable('size','num')"><span>Size</span></th>
+				<th class="hide"></th>
+				<th id=th_modtime onclick="sortTable('modtime','date')"><span>Last Modified</span></th>
+				<th class="hide"></th>
 			</tr>
             
             {{range .Items}}
-            <tr>
-				<td><a href="{{.ZipPath}}">ZIP</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{.Name}}">{{.Name}}</a></td>
+			<tr>
+				<td class=qr>
+					<button onclick="showQR('{{.ZipPath}}')">ZIP</button>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<button onclick="showQR('/{{.Name}}')">RAW</button>
+				</td>
+				<td>
+					<a href="{{.ZipPath}}">ZIP</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a href="{{.Name}}">{{.Name}}</a>
+				</td>
                 <td>{{.Type}}</td><td>{{.Size}}</td><td style="display: none;">{{.RawSize}}</td>
                 <td>{{.ModTime}}</td><td style="display: none;">{{.RawModTime}}</td>
 			</tr>
             {{end}}
 
 		</table>
-		<p class=sort id=th_0>1</p>
-		<p class=sort id=th_1>1</p>
-		<p class=sort id=th_3>1</p>
-		<p class=sort id=th_5>1</p>
+		<div id="modalPopUp" class="modal">
+			<span class="close">&times;</span>
+			<div id="qrcode"></div>
+			<div id="caption"></div>
+		  </div>
+		<p class="hide" id="baseURL">{{.IP}}:{{.Port}}</p>
+		<p class="hide" id=sort_name>1</p>
+		<p class="hide" id=sort_type>1</p>
+		<p class="hide" id=sort_size>1</p>
+		<p class="hide" id=sort_modtime>1</p>
 	<script src="{{.WebPath}}/static/js/app.js"></script>
+	<script src="{{.WebPath}}/static/js/qrcode.min.js"></script>
 	</body>
 </html>
