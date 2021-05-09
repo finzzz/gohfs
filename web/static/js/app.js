@@ -1,4 +1,3 @@
-{{ define "JS" }}
 function submitForm() {
     var f = document.getElementsByName('upload-form')[0];
     f.submit();
@@ -70,4 +69,3 @@ function sortTable(idx, type) {
     }
     sortorder.innerHTML = Number(sortorder.innerHTML) * -1;
 }
-{{ end }}

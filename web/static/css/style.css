@@ -1,4 +1,3 @@
-{{ define "CSS" }}
 body {
     font-family: arial, sans-serif;
     font-weight: 300;
@@ -60,4 +59,3 @@ code {
 .sort {
     display:none;
 }
-{{ end }}

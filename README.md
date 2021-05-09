@@ -26,7 +26,7 @@ Feature-rich Simple HTTP Server
 - [ ] https support
 - [ ] show QR link
 - [ ] verbose logging
-- [ ] split gohfs.go into smaller modules
+- [x] split gohfs.go into smaller modules
 - [x] disable directory listing option
 - [x] add authentication
 - [x] download file/folder as zip
