@@ -1,7 +1,7 @@
 # GoHFS
 Feature-rich HTTP File Server
 
-![](ss.png)
+![](https://raw.githubusercontent.com/finzzz/images/master/gohfs.png)
 
 # Features and roadmap
 - UI

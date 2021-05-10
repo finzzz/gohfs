@@ -1,5 +1,31 @@
 baseURL = document.getElementById("baseURL").innerHTML
-document.getElementById("uploadcmd").innerHTML = "curl -F 'file=@uploadthis.txt' " + baseURL
+zipPath = document.getElementById("zipPath")
+document.getElementById("up_curl").innerHTML = "curl -F 'file=@uploadthis.txt' " + baseURL
+
+renderItems("linksvg", "static/icons/link.svg")
+renderItems("zipsvg", "static/icons/zip.svg")
+renderItems("qrsvg", "static/icons/qr.svg")
+renderItems("hashsvg", "static/icons/hash.svg")
+renderItems("termsvg", "static/icons/term.svg")
+
+setZipPath()
+
+function setZipPath() {
+    var link = document.getElementsByClassName("ziplink")
+
+    Array.prototype.forEach.call(link, function(slide, index) {
+        link.item(index).href = zipPath.innerHTML + "/" + link.item(index).name
+    });
+}
+
+function renderItems(cls, url) {
+    var webPath = document.getElementById("webPath")
+    var link = document.getElementsByClassName(cls)
+
+    Array.prototype.forEach.call(link, function(slide, index) {
+        link.item(index).src = webPath.innerHTML + "/" + url
+    });
+}
 
 function submitForm() {
     var f = document.getElementsByName('upload-form')[0]
@@ -7,9 +33,18 @@ function submitForm() {
     f.reset()
 }
 
-function copyText() {
+function copyTextAsURL(text) {
     const tmp = document.createElement('textarea')
-    tmp.value = (document.getElementById("uploadcmd")).innerHTML
+    tmp.value = baseURL + "/" + text
+    document.body.appendChild(tmp)
+    tmp.select()
+    document.execCommand('copy')
+    document.body.removeChild(tmp)
+}
+
+function copyTextById(id) {
+    const tmp = document.createElement('textarea')
+    tmp.value = (document.getElementById(id)).innerHTML
     document.body.appendChild(tmp)
     tmp.select()
     document.execCommand('copy')
@@ -80,22 +115,31 @@ function sortTable(id, type) {
     sortorder.innerHTML = Number(sortorder.innerHTML) * -1
 }
 
+function showModal(id) {
+    var modal = document.getElementById(id)
+    modal.style.display = "flex"
+}
+
+function hideModal(id) {
+    var modal = document.getElementById(id)
+    modal.style.display = "none"
+
+    document.getElementById("qrcode").innerHTML = ""
+    document.getElementById("zipqrcode").innerHTML = ""
+}
+
 function showQR(url) {
     qrdiv = document.getElementById("qrcode")
     qrcode = new QRCode(qrdiv, {width: 256, height: 256, margin: "auto"})
-    
-    var modal = document.getElementById("modalPopUp")
-    var captionText = document.getElementById("caption")
+    document.getElementById("caption").innerHTML = "RAW : " + baseURL + url
 
-    modal.style.display = "block"
-    captionText.innerHTML = baseURL + url
+    // zip
+    zipqrdiv = document.getElementById("zipqrcode")
+    zipqrcode = new QRCode(zipqrdiv, {width: 256, height: 256, margin: "auto"})
+    document.getElementById("zipcaption").innerHTML = "ZIP : " + baseURL + zipPath.innerHTML + url
 
-    var span = document.getElementsByClassName("close")[0]
-    span.onclick = function() { 
-        modal.style.display = "none"
-        qrdiv.innerHTML = ""
-        qrcode.clear()
-    }
+    showModal("QRModal")
 
     qrcode.makeCode(baseURL + url)
+    zipqrcode.makeCode(baseURL + zipPath.innerHTML + url)
 }

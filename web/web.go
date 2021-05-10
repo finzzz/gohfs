@@ -15,20 +15,22 @@ var web embed.FS
 
 type Templ struct {
 	Dir 			string
+	Scheme			string
 	IP				string
 	Port			string
 	Items			[]Item
 	NItems			string
 	WebPath			string
+	ZipPath			string
 }
 
 type Item struct {
 	Name			string
 	Type			string
 	Size			string
-	ZipPath			string
 	RawSize			string
 	ModTime			string
+	SHA1			string
 	RawModTime		string
 }
 
@@ -36,10 +38,9 @@ func Embed(cfg *config.Config){
 	(*cfg).Web = web
 }
 
-func ParseItem(info fs.FileInfo, dir string) Item {
+func ParseItem(info fs.FileInfo) Item {
 	tmp := Item{
 		Name: info.Name(),
-		ZipPath: dir + "/" + info.Name(),
 		ModTime: info.ModTime().Format(time.RFC1123),
 		RawModTime: info.ModTime().Format(time.RFC3339),
 	}
@@ -48,7 +49,6 @@ func ParseItem(info fs.FileInfo, dir string) Item {
 		tmp.Type = "Directory"
 		tmp.Size = "--"
 		tmp.RawSize = "-1"
-		tmp.ZipPath += "/"
 	} else {
 		fsize, suffix := utils.ParseSize(info.Size())
 

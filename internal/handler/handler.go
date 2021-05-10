@@ -42,6 +42,8 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Add("content-type","text/css; charset=utf-8")
 		} else if strings.HasSuffix(fname, ".js") {
 			w.Header().Add("content-type","text/javascript; charset=utf-8")
+		} else if strings.HasSuffix(fname, ".svg") {
+			w.Header().Add("content-type","image/svg+xml; charset=utf-8")
 		}
 
 		data, err := h.Config.Web.ReadFile(fname)
@@ -60,17 +62,24 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 
 func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 	file, fileHeader, err := r.FormFile("file")
-	fsize, fbytes := utils.ParseSize(fileHeader.Size)
-	log.Printf("From: %s - %s %s  filename: %s  size: %g %s", r.RemoteAddr, r.Method, r.URL, fileHeader.Filename, fsize, fbytes)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("uploadHandler: ", err)
+		return
 	}
 	defer file.Close()
 
-	fileBytes, _ := io.ReadAll(file) // read content
+	fsize, fbytes := utils.ParseSize(fileHeader.Size)
+	log.Printf("From: %s - %s %s  filename: %s  size: %g %s", r.RemoteAddr, r.Method, r.URL, fileHeader.Filename, fsize, fbytes)
+	if err != nil {
+		log.Println("uploadHandler: ", err)
+		return
+	}
+	
+	fileBytes, err := io.ReadAll(file) // read content
 	err = os.WriteFile( h.Config.Dir + r.RequestURI + fileHeader.Filename, fileBytes, 0644) // write to file
 	if err != nil {
-		log.Fatal(err)
+		log.Println("uploadHandler: ", err)
+		return
 	}
 
 	fmt.Fprintln(w, `<script>alert("Upload Success!")</script>`)
@@ -94,9 +103,11 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	templ := web.Templ{
+		Scheme	: h.Config.Scheme,
         IP      : utils.GetIP(strings.Split(r.Host,":")[0]),
         Port    : h.Config.Port,
 		WebPath	: h.Config.WebPath,
+		ZipPath	: h.Config.ZipPath,
     }
 
 	if ! h.Config.Hide {
@@ -105,7 +116,7 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 
 		for _, file := range files {
 			info,_ := file.Info()
-			templ.Items = append(templ.Items, web.ParseItem(info, h.Config.ZipPath))
+			templ.Items = append(templ.Items, web.ParseItem(info))
 		}
 	}
 
