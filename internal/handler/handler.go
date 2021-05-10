@@ -12,21 +12,23 @@ import (
 
 	"gohfs/web"
 	"gohfs/internal/utils"
+	"gohfs/internal/logger"
 )
 
 func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" && utils.IsDirPath(string(r.RequestURI)){
 		h.uploadHandler(w, r)
-	} else {
-		log.Printf("From: %s - %s %s", r.RemoteAddr, r.Method, r.URL)
 	}
 
-	if strings.HasPrefix(r.RequestURI, h.Config.ZipPath) {
-		z := utils.ZipWrite(h.Config.Dir + strings.TrimPrefix(r.RequestURI, h.Config.ZipPath))
+	if strings.HasPrefix(r.RequestURI, h.Config.WebPath) {
+		h.staticHandler(w, r)
+		return
+	}
 
-		w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(r.RequestURI) + ".zip")
-		http.ServeFile(w, r, z)
-		_ = os.Remove(z)
+	log.Printf("From: %s - %s %s", r.RemoteAddr, r.Method, r.URL)
+
+	if strings.HasPrefix(r.RequestURI, h.Config.ZipPath) {
+		h.zipHandler(w, r)
 		return
 	}
 
@@ -35,50 +37,25 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.HasPrefix(r.RequestURI, h.Config.WebPath) {
-		fname := strings.Trim(strings.TrimPrefix(r.RequestURI, h.Config.WebPath),"/")
-
-		if strings.HasSuffix(fname, ".css") {
-			w.Header().Add("content-type","text/css; charset=utf-8")
-		} else if strings.HasSuffix(fname, ".js") {
-			w.Header().Add("content-type","text/javascript; charset=utf-8")
-		} else if strings.HasSuffix(fname, ".svg") {
-			w.Header().Add("content-type","image/svg+xml; charset=utf-8")
-		}
-
-		data, err := h.Config.Web.ReadFile(fname)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		fmt.Fprintln(w, string(data))
-
-		return
-	}
-
 	http.ServeFile(w, r, h.Config.Dir + r.RequestURI)	
 }
 
 func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 	file, fileHeader, err := r.FormFile("file")
-	if err != nil {
-		log.Println("uploadHandler: ", err)
+	if logger.LogErr("uploadHandler", err) {
 		return
 	}
 	defer file.Close()
 
 	fsize, fbytes := utils.ParseSize(fileHeader.Size)
 	log.Printf("From: %s - %s %s  filename: %s  size: %g %s", r.RemoteAddr, r.Method, r.URL, fileHeader.Filename, fsize, fbytes)
-	if err != nil {
-		log.Println("uploadHandler: ", err)
+	if logger.LogErr("uploadHandler", err) {
 		return
 	}
 	
 	fileBytes, err := io.ReadAll(file) // read content
 	err = os.WriteFile( h.Config.Dir + r.RequestURI + fileHeader.Filename, fileBytes, 0644) // write to file
-	if err != nil {
-		log.Println("uploadHandler: ", err)
+	if logger.LogErr("uploadHandler", err) {
 		return
 	}
 
@@ -86,20 +63,18 @@ func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
-	dir := h.Config.Dir + r.RequestURI
-
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 
+	dir := h.Config.Dir + r.RequestURI
+
 	files, err := os.ReadDir(dir)
-	if err != nil {
-		fmt.Fprintf(w, "<h1>permission denied</h1>")
-		log.Printf("permission denied : %s", dir)
+	if logger.LogErr("listingHandler (ReadDir)", err) {
 		return
 	}
 
 	index, err := template.ParseFS(h.Config.Web, "template/index.html")
-	if err != nil {
-		log.Println(err)
+	if logger.LogErr("listingHandler (parse template)", err) {
+		return
 	}
 
 	templ := web.Templ{
@@ -121,7 +96,36 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 	}
 
     err = index.Execute(w, templ)
-    if err != nil {
-        log.Fatal(err)
-    }
+	if logger.LogErr("listingHandler (execute template)", err) {
+		return
+	}
+}
+
+func (h HandlerObj) zipHandler(w http.ResponseWriter, r *http.Request) {
+	z := utils.ZipWrite(h.Config.Dir + strings.TrimPrefix(r.RequestURI, h.Config.ZipPath))
+
+	w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(r.RequestURI) + ".zip")
+	http.ServeFile(w, r, z)
+	_ = os.Remove(z)
+
+	return
+}
+
+func (h HandlerObj) staticHandler(w http.ResponseWriter, r *http.Request) {
+	fname := strings.Trim(strings.TrimPrefix(r.RequestURI, h.Config.WebPath),"/")
+
+	if strings.HasSuffix(fname, ".css") {
+		w.Header().Add("content-type","text/css; charset=utf-8")
+	} else if strings.HasSuffix(fname, ".js") {
+		w.Header().Add("content-type","text/javascript; charset=utf-8")
+	} else if strings.HasSuffix(fname, ".svg") {
+		w.Header().Add("content-type","image/svg+xml; charset=utf-8")
+	}
+
+	data, err := h.Config.Web.ReadFile(fname)
+	if logger.LogErr("staticHandler", err) {
+		return
+	}
+
+	fmt.Fprintln(w, string(data))
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="shortcut icon" href="#"/>
 		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/style.css">
 		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/modal.css">
 	</head>
@@ -12,30 +13,25 @@
 		</div>
 		<table id=filetable>
 			<tr>
-				<th id=th_name>
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('name')"/>
-					<span>Name</span>
+				<th id=th_name data-sortorder="1">
+					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('name')"/>Name
 				</th>
-				<th id=th_type>
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('type')"/>
-					<span>Type</span>
+				<th id=th_type data-sortorder="1">
+					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('type')"/>Type
 				</th>
-				<th id=th_size>
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('size','num')"/>
-					<span>Size</span>
+				<th id=th_size data-sortorder="1">
+					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('size','num')"/>Size
 				</th>
 				<th class="hide"></th>
-				<th id=th_modtime>
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('modtime','date')"/>
-					<span>Last Modified</span>
+				<th id=th_modtime data-sortorder="1">
+					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('modtime','date')"/>Last Modified
 				</th>
 				<th class="hide"></th>
 				<th>
-					<span>More</span>
+					More Actions
 				</th>
 			</tr>
             
-			
             {{range .Items}}
 			<tr>
 				<td><a href="{{.Name}}">{{.Name}}</a></td>
@@ -59,7 +55,6 @@
 				</td>
 			</tr>
             {{end}}
-
 		</table>
 
 		<div id="QRModal" class="modal">
@@ -78,9 +73,9 @@
 			<span class="close" onclick="hideModal('UploadModal')">&times;</span>
 			<div class="upload">
 				<div class=up_form>
-					<form ENCTYPE=multipart/form-data name=upload-form method=post onclick=submitForm()>
+					<form ENCTYPE=multipart/form-data name=upload-form method=post>
 						<input name=file type="file"/>
-						<input class=btn type=submit value="upload"/>
+						<input class=btn type=submit value="upload" onclick=submitForm()/>
 					</form>
 				</div>
 				<div class=up_cmd>
@@ -94,10 +89,6 @@
 			<p id="baseURL">{{.Scheme}}://{{.IP}}:{{.Port}}</p>
 			<p id="webPath">{{.WebPath}}</p>
 			<p id="zipPath">{{.ZipPath}}</p>
-			<p id=sort_name>1</p>
-			<p id=sort_type>1</p>
-			<p id=sort_size>1</p>
-			<p id=sort_modtime>1</p>
 		</div>
 	<script src="{{.WebPath}}/static/js/app.js"></script>
 	<script src="{{.WebPath}}/static/js/qrcode.min.js"></script>

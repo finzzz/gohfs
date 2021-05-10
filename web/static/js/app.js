@@ -1,17 +1,21 @@
 baseURL = document.getElementById("baseURL").innerHTML
 zipPath = document.getElementById("zipPath")
-document.getElementById("up_curl").innerHTML = "curl -F 'file=@uploadthis.txt' " + baseURL
+init()
 
-renderItems("linksvg", "static/icons/link.svg")
-renderItems("zipsvg", "static/icons/zip.svg")
-renderItems("qrsvg", "static/icons/qr.svg")
-renderItems("hashsvg", "static/icons/hash.svg")
-renderItems("termsvg", "static/icons/term.svg")
+function init() {
+    document.getElementById("up_curl").innerHTML = "curl -F 'file=@uploadthis.txt' " + baseURL
 
-setZipPath()
+    renderItems("linksvg", "static/icons/link.svg")
+    renderItems("zipsvg", "static/icons/zip.svg")
+    renderItems("qrsvg", "static/icons/qr.svg")
+    renderItems("hashsvg", "static/icons/hash.svg")
+    renderItems("termsvg", "static/icons/term.svg")
+
+    setZipPath()
+}
 
 function setZipPath() {
-    var link = document.getElementsByClassName("ziplink")
+    link = document.getElementsByClassName("ziplink")
 
     Array.prototype.forEach.call(link, function(slide, index) {
         link.item(index).href = zipPath.innerHTML + "/" + link.item(index).name
@@ -19,8 +23,8 @@ function setZipPath() {
 }
 
 function renderItems(cls, url) {
-    var webPath = document.getElementById("webPath")
-    var link = document.getElementsByClassName(cls)
+    webPath = document.getElementById("webPath")
+    link = document.getElementsByClassName(cls)
 
     Array.prototype.forEach.call(link, function(slide, index) {
         link.item(index).src = webPath.innerHTML + "/" + url
@@ -28,27 +32,28 @@ function renderItems(cls, url) {
 }
 
 function submitForm() {
-    var f = document.getElementsByName('upload-form')[0]
+    f = document.getElementsByName("upload-form")[0]
     f.submit()
     f.reset()
 }
 
 function copyTextAsURL(text) {
-    const tmp = document.createElement('textarea')
+    tmp = document.createElement("textarea")
     tmp.value = baseURL + "/" + text
-    document.body.appendChild(tmp)
-    tmp.select()
-    document.execCommand('copy')
-    document.body.removeChild(tmp)
+    copy(tmp)
 }
 
 function copyTextById(id) {
-    const tmp = document.createElement('textarea')
+    tmp = document.createElement("textarea")
     tmp.value = (document.getElementById(id)).innerHTML
-    document.body.appendChild(tmp)
-    tmp.select()
-    document.execCommand('copy')
-    document.body.removeChild(tmp)
+    copy(tmp)
+}
+
+function copy(val) {
+    document.body.appendChild(val)
+    val.select()
+    document.execCommand("copy")
+    document.body.removeChild(val)
 }
 
 function getCellIdx(id) {
@@ -59,10 +64,20 @@ function getCellIdx(id) {
     return document.getElementById("th_"+id).cellIndex
 }
 
+function compare(x, y, sortorder) {
+    if ((x > y && sortorder > 0) || (x < y && sortorder < 0)) {
+        return true
+    }
+
+    return false
+}
+
 function sortTable(id, type) {
     var rows, i, x, y, shouldSwitch
     table = document.getElementById("filetable")
-    sortorder = document.getElementById("sort_" + id)
+    header = document.getElementById("th_" + id)
+    sortorder = header.getAttribute("data-sortorder")
+
     cellIdx = getCellIdx(id)
     switching = true
     while (switching) {
@@ -74,54 +89,41 @@ function sortTable(id, type) {
             y = rows[i + 1].getElementsByTagName("TD")[cellIdx]
 
             if (type == "num") {
-                if (Number(x.innerHTML) > Number(y.innerHTML) && sortorder.innerHTML > 0) {
-                    shouldSwitch = true
-                    break
-                }
-                
-                if (Number(x.innerHTML) < Number(y.innerHTML) && sortorder.innerHTML < 0) {
+                if (compare(Number(x.innerHTML), Number(y.innerHTML), sortorder)) {
                     shouldSwitch = true
                     break
                 }
             } else if (type == "date"){
                 x = new Date(x.innerHTML)
                 y = new Date(y.innerHTML)
-                if (x > y && sortorder.innerHTML > 0) {
-                    shouldSwitch = true
-                    break
-                }
-                
-                if (x < y && sortorder.innerHTML < 0) {
+                if (compare(x, y, sortorder)) {
                     shouldSwitch = true
                     break
                 }
             } else {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && sortorder.innerHTML > 0) {
-                    shouldSwitch = true
-                    break
-                }
-
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && sortorder.innerHTML < 0) {
+                if (compare(x.innerHTML.toLowerCase(), y.innerHTML.toLowerCase(), sortorder)) {
                     shouldSwitch = true
                     break
                 }
             }
         }
+
         if (shouldSwitch) {
             rows[i].parentNode.insertBefore(rows[i + 1], rows[i])
             switching = true
         }
     }
-    sortorder.innerHTML = Number(sortorder.innerHTML) * -1
+
+    header.setAttribute("data-sortorder", Number(sortorder) * -1)
 }
 
 function showModal(id) {
-    var modal = document.getElementById(id)
+    modal = document.getElementById(id)
     modal.style.display = "flex"
 }
 
 function hideModal(id) {
-    var modal = document.getElementById(id)
+    modal = document.getElementById(id)
     modal.style.display = "none"
 
     document.getElementById("qrcode").innerHTML = ""

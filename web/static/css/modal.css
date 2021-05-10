@@ -17,10 +17,12 @@
 
 .caption {
     margin: auto;
-    display: block;
     text-align: center;
     padding: 10px 0;
-    height: 150px;
+    max-width: 350px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @-webkit-keyframes zoom {
