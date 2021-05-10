@@ -1,8 +1,43 @@
 # GoHFS
-Feature-rich Simple HTTP Server
+Feature-rich HTTP File Server
 
 ![](ss.png)
-  
+
+# Features and roadmap
+- UI
+    - [x] Show QR Link
+    - [ ] SHA1 checksum
+    - Command line cheatsheet (curl, wget, PS)
+        - [ ] Upload
+        - [ ] Download
+    - [ ] Hot reload
+    - [ ] Relative last modified
+    - [ ] Regex filtering
+- Functionality
+    - [ ] Send message to backend
+    - [ ] File search using fzf
+- Upload
+    - [x] Single file upload
+    - [ ] Multi file upload
+    - [ ] Limit upload size
+- Download
+    - [x] as ZIP
+    - [ ] Base64 encode
+    - [ ] Multi file download
+- Security
+    - [ ] HTTPS
+    - [x] Basic Auth
+        - [x] Can store as hashed password
+    - [x] Can disable directory listing
+    - [ ] Can disable upload
+    - [ ] Can disable zip
+    - [ ] Regex listing
+- Others
+    - [ ] Log to file
+    - [ ] Minify JS on build
+    - [ ] Show version
+    - [x] Specify ip, port, dir
+
 # Getting started
 ```bash
 # running in current directory
@@ -21,13 +56,3 @@ Feature-rich Simple HTTP Server
 # getting help
 ./gohfs -h
 ```
-
-# TODO
-- [ ] https support
-- [ ] verbose logging
-- [ ] show version
-- [x] show QR link
-- [x] split gohfs.go into smaller modules
-- [x] disable directory listing option
-- [x] add authentication
-- [x] download file/folder as zip
