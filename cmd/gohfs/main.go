@@ -25,6 +25,11 @@ func main(){
             Handler:        http_handler,
 	}
 	
-	fmt.Printf("Serving HTTP on %s port %s (http://%s:%s/) ...\n", cfg.Host, cfg.Port, cfg.Host, cfg.Port)
-	log.Fatal(http_server.ListenAndServe()) 
+	fmt.Printf("Serving on %s://%s:%s/ ...\n", cfg.Scheme, cfg.Host, cfg.Port)
+
+	if cfg.Scheme == "https" {
+		log.Fatal(http_server.ListenAndServeTLS(cfg.CertPem, cfg.KeyPem)) 
+	} else {
+		log.Fatal(http_server.ListenAndServe()) 
+	}
 }

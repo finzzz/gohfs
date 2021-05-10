@@ -25,7 +25,7 @@ Feature-rich HTTP File Server
     - [ ] Base64 encode
     - [ ] Multi file download
 - Security
-    - [ ] HTTPS
+    - [x] HTTPS
     - [x] Basic Auth
         - [x] Can store as hashed password
     - [x] Can disable directory listing
@@ -45,6 +45,9 @@ Feature-rich HTTP File Server
 
 # specifying parameters
 ./gohfs -host 127.0.0.1 -port 8081 -dir /tmp 
+
+# https
+./gohfs -tls -cert selfsigned.cert -key selfsigned.key
 
 # disable directory listing
 ./gohfs -hide
