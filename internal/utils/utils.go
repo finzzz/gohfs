@@ -1,11 +1,15 @@
 package utils
 
 import (
+	"io"
+	"os"
+	"fmt"
 	"net"
 	"time"
 	"math"
 	"math/rand"
 	"strings"
+	"crypto/sha1"
 )
 
 func RandStr(n int) string {
@@ -35,6 +39,21 @@ func Basename(s string) (string){
 	}
 	
 	return splits[len(splits)-1]
+}
+
+func SHA1(f string) (string) {
+	file, err := os.Open(f)
+	if err != nil {
+		return err.Error()
+	}
+	defer file.Close()
+
+	hash := sha1.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return err.Error()
+	}
+
+	return fmt.Sprintf("%x", hash.Sum(nil))
 }
 
 func ParseSize(s int64) (float64, string){

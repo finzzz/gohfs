@@ -6,7 +6,7 @@ Feature-rich HTTP File Server
 # Features and roadmap
 - UI
     - [x] Show QR Link
-    - [ ] SHA1 checksum
+    - [x] SHA1 checksum
     - Command line cheatsheet (curl, wget, PS)
         - [ ] Upload
         - [ ] Download

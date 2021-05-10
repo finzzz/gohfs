@@ -32,6 +32,11 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.HasPrefix(r.RequestURI, h.Config.SHA1Path) {
+		h.sha1Handler(w, r)
+		return
+	}
+
 	if utils.IsDirPath(string(r.RequestURI)) {
 		h.listingHandler(w, r)
 		return
@@ -78,11 +83,12 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	templ := web.Templ{
-		Scheme	: h.Config.Scheme,
-        IP      : utils.GetIP(strings.Split(r.Host,":")[0]),
-        Port    : h.Config.Port,
-		WebPath	: h.Config.WebPath,
-		ZipPath	: h.Config.ZipPath,
+		Scheme		: h.Config.Scheme,
+        IP      	: utils.GetIP(strings.Split(r.Host,":")[0]),
+        Port    	: h.Config.Port,
+		WebPath		: h.Config.WebPath,
+		ZipPath		: h.Config.ZipPath,
+		SHA1Path	: h.Config.SHA1Path,
     }
 
 	if ! h.Config.Hide {
@@ -128,4 +134,9 @@ func (h HandlerObj) staticHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintln(w, string(data))
+}
+
+func (h HandlerObj) sha1Handler(w http.ResponseWriter, r *http.Request) {
+	sha1 := utils.SHA1(h.Config.Dir + strings.TrimPrefix(r.RequestURI, h.Config.SHA1Path))
+	fmt.Fprintln(w, `<script>alert("` + sha1 + `"); history.back()</script>`)
 }

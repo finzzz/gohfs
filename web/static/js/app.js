@@ -1,5 +1,6 @@
 baseURL = document.getElementById("baseURL").innerHTML
-zipPath = document.getElementById("zipPath")
+zipPath = document.getElementById("zipPath").innerHTML
+sha1Path = document.getElementById("sha1Path").innerHTML
 init()
 
 function init() {
@@ -11,14 +12,15 @@ function init() {
     renderItems("hashsvg", "static/icons/hash.svg")
     renderItems("termsvg", "static/icons/term.svg")
 
-    setZipPath()
+    setPath(zipPath, "ziplink")
+    setPath(sha1Path, "sha1link")
 }
 
-function setZipPath() {
-    link = document.getElementsByClassName("ziplink")
+function setPath(path, cls) {
+    link = document.getElementsByClassName(cls)
 
     Array.prototype.forEach.call(link, function(slide, index) {
-        link.item(index).href = zipPath.innerHTML + "/" + link.item(index).name
+        link.item(index).href = path + "/" + link.item(index).name
     });
 }
 
@@ -138,10 +140,10 @@ function showQR(url) {
     // zip
     zipqrdiv = document.getElementById("zipqrcode")
     zipqrcode = new QRCode(zipqrdiv, {width: 256, height: 256, margin: "auto"})
-    document.getElementById("zipcaption").innerHTML = "ZIP : " + baseURL + zipPath.innerHTML + url
+    document.getElementById("zipcaption").innerHTML = "ZIP : " + baseURL + zipPath + url
 
     showModal("QRModal")
 
     qrcode.makeCode(baseURL + url)
-    zipqrcode.makeCode(baseURL + zipPath.innerHTML + url)
+    zipqrcode.makeCode(baseURL + zipPath + url)
 }

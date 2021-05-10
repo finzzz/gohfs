@@ -18,6 +18,7 @@ type Config struct {
 	HashedPass		string
 	WebPath			string
 	ZipPath			string
+	SHA1Path		string
 	Hide			bool
 	Web				embed.FS
 }
@@ -41,8 +42,9 @@ func ParseConf(config *Config) {
 	flag.StringVar(&config.HashedPass, "hpass", "", "Hashed Password (sha-256)")
 
 	// api path
-	flag.StringVar(&config.WebPath, "webpath", "/gohfs-web", "UI Path")
-	flag.StringVar(&config.ZipPath, "zippath", "/gohfs-zip", "Zip Path")
+	flag.StringVar(&config.WebPath, "webpath", "/gohfs-web", "UI API")
+	flag.StringVar(&config.ZipPath, "zippath", "/gohfs-zip", "Zip API")
+	flag.StringVar(&config.SHA1Path, "sha1path", "/gohfs-sha1", "SHA1 API")
 	
 	// disable feature
 	flag.BoolVar(&config.Hide, "hide", false, "Disable Listing")

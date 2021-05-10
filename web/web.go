@@ -22,6 +22,7 @@ type Templ struct {
 	NItems			string
 	WebPath			string
 	ZipPath			string
+	SHA1Path		string
 }
 
 type Item struct {

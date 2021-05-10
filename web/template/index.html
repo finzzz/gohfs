@@ -50,7 +50,7 @@
 					<img class="more icon termsvg" src=""/>
 
 					{{ if (eq .Type "File") }}
-					<img class="more icon hashsvg" src=""/>
+					<a class="more sha1link" name="{{.Name}}"><img class="more icon hashsvg" src=""/></a>
 					{{ end }}
 				</td>
 			</tr>
@@ -89,6 +89,7 @@
 			<p id="baseURL">{{.Scheme}}://{{.IP}}:{{.Port}}</p>
 			<p id="webPath">{{.WebPath}}</p>
 			<p id="zipPath">{{.ZipPath}}</p>
+			<p id="sha1Path">{{.SHA1Path}}</p>
 		</div>
 	<script src="{{.WebPath}}/static/js/app.js"></script>
 	<script src="{{.WebPath}}/static/js/qrcode.min.js"></script>
