@@ -5,14 +5,6 @@ body {
     margin-left: 20px;
 }
 
-table {
-    border-spacing: 0;
-    text-align: left;
-    border-top: 1px solid #dee2e6;
-    border-bottom: 1px solid #111;
-    width: calc(100% - 40px);
-}
-
 a {
     color: #17a2b8;
     text-decoration: none;
@@ -47,12 +39,6 @@ img {
     margin: auto;
 }
 
-th {
-    border-bottom: 1px solid #111;
-    border-top: 1px solid #dee2e6;
-    padding-left: 5px;
-}
-
 .icon {
     height: 0.7em;
     padding-top: 5px;
@@ -66,17 +52,6 @@ th {
 
 .icon:active {
     filter: none;
-}
-
-td {
-    height: 30px;
-    min-width: 75px;
-    max-width: 300px;
-    border-top: 1px solid #dee2e6;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding-left: 5px;
 }
 
 code {
@@ -109,8 +84,4 @@ code {
     height: 60%;
     width: 50%;
     background-color: white;
-}
-
-.more {
-    height: 20px;
 }

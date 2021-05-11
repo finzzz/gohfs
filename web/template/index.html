@@ -3,27 +3,26 @@
 	<head>
 		<link rel="shortcut icon" href="#"/>
 		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/style.css">
+		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/table.css">
 		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/modal.css">
 	</head>
 	<body>
 		<h2>Directory : {{.Dir}}</h2>
-		<button class=btn onclick="showModal('UploadModal')">Upload</button>
-		<div style="float: right; margin-right: 40px">
-  			{{.NItems}} items
-		</div>
-		<table id=filetable>
+		<button class="btn" onclick="showModal('UploadModal')">Upload</button>
+		<div style="float: right; margin-right: 40px">{{.NItems}} items</div>
+		<table id="filetable">
 			<tr>
-				<th id=th_name data-sortorder="1">
+				<th id="th_name" data-sortorder="1">
 					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('name')"/>Name
 				</th>
-				<th id=th_type data-sortorder="1">
+				<th id="th_type" data-sortorder="1">
 					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('type')"/>Type
 				</th>
-				<th id=th_size data-sortorder="1">
+				<th id="th_size" data-sortorder="1">
 					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('size','num')"/>Size
 				</th>
 				<th class="hide"></th>
-				<th id=th_modtime data-sortorder="1">
+				<th id="th_modtime" data-sortorder="1">
 					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('modtime','date')"/>Last Modified
 				</th>
 				<th class="hide"></th>
@@ -35,8 +34,8 @@
             {{range .Items}}
 			<tr>
 				<td><a href="{{.Name}}">{{.Name}}</a></td>
-                <td>{{.Type}}</td><td>{{.Size}}</td><td style="display: none;">{{.RawSize}}</td>
-                <td>{{.ModTime}}</td><td style="display: none;">{{.RawModTime}}</td>
+                <td>{{.Type}}</td><td>{{.Size}}</td><td class="hide">{{.RawSize}}</td>
+                <td>{{.ModTime}}</td><td class="hide">{{.RawModTime}}</td>
 				<td>
 					<img class="more icon linksvg" src="" onclick="copyTextAsURL('{{.Name}}')"/>
 
