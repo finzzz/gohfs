@@ -5,3 +5,8 @@ init:
 
 test:
 	go run cmd/gohfs/main.go
+
+compress:
+	upx releases/gohfs-linux-amd64
+	upx releases/gohfs-macos-amd64
+	upx releases/gohfs-amd64.exe
