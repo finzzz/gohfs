@@ -68,20 +68,46 @@ code {
     display:none;
 }
 
-.upload {
-    height: 50px;
-    margin-top: 5%;
+.uploaddiv {
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
+    display: block;
 }
 
-.up_cmd, .up_form {
-    padding: 20px;
+.upload {
+	height: 50px;
+	margin-top: 2%;
+	padding: 20px;
+	background-color: white;
+	text-align: center;
+}
+
+.uploadcmd {
+	margin-left: auto;
+	margin-right: auto;
     background-color: white;
 }
 
 .qr {
     height: 60%;
     width: 50%;
+    padding-top: 5%;
     background-color: white;
+}
+
+.termdiv {
+    width: 80%;
+    padding-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+}
+
+.termcmd {
+    display: flex;
+}
+
+.termcmdname {
+    width: 100px;
 }

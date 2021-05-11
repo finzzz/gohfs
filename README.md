@@ -7,17 +7,16 @@ Feature-rich HTTP File Server
 - UI
     - [x] Show QR Link
     - [x] SHA1 checksum
-    - Command line cheatsheet (curl, wget, PS)
-        - [ ] Upload
-        - [ ] Download
+    - [x] Command line cheatsheet (curl, wget, PS)
     - [ ] Hot reload
     - [ ] Relative last modified
     - [ ] Regex filtering
 - Functionality
     - [ ] Send message to backend
-    - [ ] File search using fzf
+    - [ ] Global search using fzf
 - Upload
     - [x] Single file upload
+    - [ ] Folder upload
     - [ ] Multi file upload
     - [ ] Limit upload size
 - Download
@@ -34,6 +33,7 @@ Feature-rich HTTP File Server
     - [ ] Regex listing
 - Others
     - [ ] Log to file
+    - [x] Compress binary
     - [ ] Minify JS on build
     - [ ] Show version
     - [x] Specify ip, port, dir

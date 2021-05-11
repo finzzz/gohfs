@@ -4,8 +4,6 @@ sha1Path = document.getElementById("sha1Path").innerHTML
 init()
 
 function init() {
-    document.getElementById("up_curl").innerHTML = "curl -F 'file=@uploadthis.txt' " + baseURL
-
     renderItems("linksvg", "static/icons/link.svg")
     renderItems("zipsvg", "static/icons/zip.svg")
     renderItems("qrsvg", "static/icons/qr.svg")
@@ -14,6 +12,38 @@ function init() {
 
     setPath(zipPath, "ziplink")
     setPath(sha1Path, "sha1link")
+}
+
+function setTerm(url){
+    link = baseURL + location.pathname + url
+    ziplink = baseURL + zipPath + location.pathname + url
+
+    dl_curl = "curl -o " + url + " " + link
+    wget = "wget -O " + url + " " + link
+    dl_ps1 = "Invoke-WebRequest -OutFile '" + url + "' -Uri '" + link
+    dl_ps2 = "(New-Object System.Net.WebClient).DownloadFile('" + link + "','" + url + "')"
+
+    document.getElementById("dl_curl").innerHTML = dl_curl
+    document.getElementById("wget").innerHTML = wget
+    document.getElementById("dl_ps1").innerHTML = dl_ps1
+    document.getElementById("dl_ps2").innerHTML = dl_ps2
+    
+    dlzip_curl = "curl -o " + url + ".zip " + ziplink
+    dlzip_wget = "wget -O " + url + ".zip " + ziplink
+    dlzip_ps1 = "Invoke-WebRequest -OutFile '" + url + ".zip' -Uri '" + ziplink
+    dlzip_ps2 = "(New-Object System.Net.WebClient).DownloadFile('" + ziplink + "','" + url + ".zip')"
+
+    document.getElementById("dlzip_curl").innerHTML = dlzip_curl
+    document.getElementById("dlzip_wget").innerHTML = dlzip_wget
+    document.getElementById("dlzip_ps1").innerHTML = dlzip_ps1
+    document.getElementById("dlzip_ps2").innerHTML = dlzip_ps2
+
+    document.getElementById("file_only").style.display = ""
+    if (document.getElementsByName(url).length < 2) {
+        document.getElementById("file_only").style.display = "none"
+    }
+
+    showModal("TermModal")
 }
 
 function setPath(path, cls) {

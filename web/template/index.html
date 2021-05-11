@@ -38,15 +38,9 @@
                 <td>{{.ModTime}}</td><td class="hide">{{.RawModTime}}</td>
 				<td>
 					<img class="more icon linksvg" src="" onclick="copyTextAsURL('{{.Name}}')"/>
-
-					{{ if (eq .Type "File") }}
 					<a class="more ziplink" name="{{.Name}}"><img class="more icon zipsvg" src=""/></a>
-					{{ else }}
-					<a class="more ziplink" name="{{.Name}}/"><img class="more icon zipsvg" src=""/></a>
-					{{ end }}
-
-					<a class=more onclick="showQR('{{.Name}}')"><img class="more icon qrsvg" src=""/></a>
-					<img class="more icon termsvg" src=""/>
+					<img class="more icon qrsvg" src="" onclick="showQR('{{.Name}}')"/>
+					<img class="more icon termsvg" src="" onclick="setTerm('{{.Name}}')"/>
 
 					{{ if (eq .Type "File") }}
 					<a class="more sha1link" name="{{.Name}}"><img class="more icon hashsvg" src=""/></a>
@@ -70,18 +64,103 @@
 
 		<div id="UploadModal" class="modal">
 			<span class="close" onclick="hideModal('UploadModal')">&times;</span>
-			<div class="upload">
-				<div class=up_form>
+
+			<div class="uploaddiv">
+				<div class="upload">
 					<form ENCTYPE=multipart/form-data name=upload-form method=post>
 						<input name=file type="file"/>
-						<input class=btn type=submit value="upload" onclick=submitForm()/>
+						<input class=btn type=submit value="Upload" onclick=submitForm()/>
 					</form>
 				</div>
-				<div class=up_cmd>
-					<code id=up_curl></code>
-					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_curl')"/>
-				</div>		
+	
+				<div class="uploadcmd">
+					<div class=termcmd>
+						<div class="termcmdname">Curl</div>
+						<div>
+							<code id=up_curl>curl -F 'file=@uploadthis.txt' {{.Scheme}}://{{.IP}}:{{.Port}}</code>
+							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_curl')"/>
+						</div>
+					</div>
+					<div class=termcmd>
+						<div class="termcmdname">Powershell</div>
+						<div>
+							<code id=up_ps>Invoke-RestMethod -Method Post -Form @{file=Get-Item -Path 'c:\path\to\uploadthis.txt'} -Uri {{.Scheme}}://{{.IP}}:{{.Port}}</code>
+							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_ps')"/>
+						</div>
+					</div>
+				</div>
 			</div>
+		</div>
+
+		<div id="TermModal" class="modal">
+			<span class="close" onclick="hideModal('TermModal')">&times;</span>
+			<div class=termdiv>
+				<div id="file_only">
+					<h1 style="text-align: center;">Raw</h1>
+					<div class=termcmddiv>
+						<div class=termcmd>
+							<div class="termcmdname">Curl</div>
+							<div>
+								<code id=dl_curl></code>
+								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_curl')"/>
+							</div>
+						</div>
+						<div class=termcmd>
+							<div class="termcmdname">Wget</div>
+							<div>
+								<code id=wget></code>
+								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('wget')"/>
+							</div>
+						</div>
+						<div class=termcmd>
+							<div class="termcmdname">Powershell</div>
+							<div>
+								<code id=dl_ps1></code>
+								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_ps1')"/>
+							</div>
+						</div>
+						<div class=termcmd>
+							<div class="termcmdname">Powershell</div>
+							<div>
+								<code id=dl_ps2></code>
+								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_ps2')"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h1 style="text-align: center;">Zip</h1>
+				<div class=termcmddiv>
+					<div class=termcmd>
+						<div class="termcmdname">Curl</div>
+						<div>
+							<code id=dlzip_curl></code>
+							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_curl')"/>
+						</div>
+					</div>
+					<div class=termcmd>
+						<div class="termcmdname">Wget</div>
+						<div>
+							<code id=dlzip_wget></code>
+							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_wget')"/>
+						</div>
+					</div>
+					<div class=termcmd>
+						<div class="termcmdname">Powershell</div>
+						<div>
+							<code id=dlzip_ps1></code>
+							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_ps1')"/>
+						</div>
+					</div>
+					<div class=termcmd>
+						<div class="termcmdname">Powershell</div>
+						<div>
+							<code id=dlzip_ps2></code>
+							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_ps2')"/>
+						</div>
+					</div>
+				</div>
+			</div>	
 		</div>
 
 		<div class="hide">
