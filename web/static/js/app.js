@@ -20,7 +20,7 @@ function setPath(path, cls) {
     link = document.getElementsByClassName(cls)
 
     Array.prototype.forEach.call(link, function(slide, index) {
-        link.item(index).href = path + "/" + link.item(index).name
+        link.item(index).href = path + location.pathname + link.item(index).name
     });
 }
 
@@ -41,7 +41,7 @@ function submitForm() {
 
 function copyTextAsURL(text) {
     tmp = document.createElement("textarea")
-    tmp.value = baseURL + "/" + text
+    tmp.value = baseURL + location.pathname + text
     copy(tmp)
 }
 
@@ -135,15 +135,17 @@ function hideModal(id) {
 function showQR(url) {
     qrdiv = document.getElementById("qrcode")
     qrcode = new QRCode(qrdiv, {width: 256, height: 256, margin: "auto"})
-    document.getElementById("caption").innerHTML = "RAW : " + baseURL + url
+    link = baseURL + location.pathname + url
+    document.getElementById("caption").innerHTML = "RAW : " + link
 
     // zip
     zipqrdiv = document.getElementById("zipqrcode")
     zipqrcode = new QRCode(zipqrdiv, {width: 256, height: 256, margin: "auto"})
-    document.getElementById("zipcaption").innerHTML = "ZIP : " + baseURL + zipPath + url
+    ziplink = baseURL + zipPath + location.pathname + url
+    document.getElementById("zipcaption").innerHTML = "ZIP : " + ziplink
 
     showModal("QRModal")
 
-    qrcode.makeCode(baseURL + url)
-    zipqrcode.makeCode(baseURL + zipPath + url)
+    qrcode.makeCode(link)
+    zipqrcode.makeCode(ziplink)
 }
