@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"net/http"
+	"net/url"
 	"html/template"
 	"strings"
 	"strconv"
@@ -42,7 +43,12 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, h.Config.Dir + r.RequestURI)	
+	link, err := url.PathUnescape(r.RequestURI)
+	if logger.LogErr("Handler", err) {
+		return
+	}
+
+	http.ServeFile(w, r, h.Config.Dir + link)
 }
 
 func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
@@ -70,7 +76,11 @@ func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 
-	dir := h.Config.Dir + r.RequestURI
+	link, err := url.PathUnescape(r.RequestURI)
+	if logger.LogErr("Handler", err) {
+		return
+	}
+	dir := h.Config.Dir + link
 
 	files, err := os.ReadDir(dir)
 	if logger.LogErr("listingHandler (ReadDir)", err) {
@@ -108,9 +118,14 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func (h HandlerObj) zipHandler(w http.ResponseWriter, r *http.Request) {
-	z := utils.ZipWrite(h.Config.Dir + strings.TrimPrefix(r.RequestURI, h.Config.ZipPath))
+	link, err := url.PathUnescape(r.RequestURI)
+	if logger.LogErr("zipHandler", err) {
+		return
+	}
 
-	w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(r.RequestURI) + ".zip")
+	z := utils.ZipWrite(h.Config.Dir + strings.TrimPrefix(link, h.Config.ZipPath))
+
+	w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(link) + ".zip")
 	http.ServeFile(w, r, z)
 	_ = os.Remove(z)
 
@@ -137,6 +152,11 @@ func (h HandlerObj) staticHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h HandlerObj) sha1Handler(w http.ResponseWriter, r *http.Request) {
-	sha1 := utils.SHA1(h.Config.Dir + strings.TrimPrefix(r.RequestURI, h.Config.SHA1Path))
+	link, err := url.PathUnescape(r.RequestURI)
+	if logger.LogErr("sha1Handler", err) {
+		return
+	}
+
+	sha1 := utils.SHA1(h.Config.Dir + strings.TrimPrefix(link, h.Config.SHA1Path))
 	fmt.Fprintln(w, `<script>alert("` + sha1 + `"); history.back()</script>`)
 }

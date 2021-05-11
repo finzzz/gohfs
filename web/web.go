@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"time"
 	"strconv"
+	"net/url"
 
 	"gohfs/internal/config"
 	"gohfs/internal/utils"
@@ -41,7 +42,7 @@ func Embed(cfg *config.Config){
 
 func ParseItem(info fs.FileInfo) Item {
 	tmp := Item{
-		Name: info.Name(),
+		Name: url.PathEscape(info.Name()),
 		ModTime: info.ModTime().Format(time.RFC1123),
 		RawModTime: info.ModTime().Format(time.RFC3339),
 	}
