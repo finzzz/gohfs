@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"io"
 	"os"
+	"log"
 	"fmt"
 	"net"
 	"time"
@@ -42,18 +42,13 @@ func Basename(s string) (string){
 }
 
 func SHA1(f string) (string) {
-	file, err := os.Open(f)
+	data, err := os.ReadFile(f)
 	if err != nil {
-		return err.Error()
-	}
-	defer file.Close()
-
-	hash := sha1.New()
-	if _, err := io.Copy(hash, file); err != nil {
-		return err.Error()
+		log.Println(err)
+		return "Error occured"
 	}
 
-	return fmt.Sprintf("%x", hash.Sum(nil))
+	return fmt.Sprintf("%x", sha1.Sum(data))
 }
 
 func ParseSize(s int64) (float64, string){
