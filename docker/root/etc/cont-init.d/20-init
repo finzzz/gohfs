@@ -1,0 +1,42 @@
+#!/usr/bin/with-contenv bash
+
+# create folders
+[[ ! -d /config/crontabs ]] && \
+	mkdir -p \
+		/config/crontabs
+
+# permissions
+chown -R abc:abc \
+	/config
+chown abc:abc  \
+	/app/gohfs
+chmod +x \
+	/app/gohfs
+
+# set cronjob
+[[ ! -f /config/crontabs/root ]] && \
+	cp /defaults/root /config/crontabs/root
+cp /config/crontabs/root /etc/crontabs/root
+
+# set env variables
+GOHFS_HOST=${GOHFS_HOST:-0.0.0.0}
+GOHFS_PORT=${GOHFS_PORT:-8080}
+GOHFS_USER=${GOHFS_USER:-}
+GOHFS_PASSWORD=${GOHFS_PASSWORD:-}
+GOHFS_PASSWORD_RAW=${GOHFS_PASSWORD_RAW:-}
+GOHFS_ARGS=${GOHFS_ARGS:-}
+
+# start app
+# check if user and password variables are set
+if [[ -n "$GOHFS_USER" ] && [ -n "$GOHFS_PASSWORD" ]]
+	then
+		# start app with sha256 password auth
+		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} -user ${GOHFS_USER} -hpass ${GOHFS_PASSWORD} ${GOHFS_ARGS}
+elif [[ -n "$GOHFS_USER" ] && [ -n "$GOHFS_PASSWORD_RAW" ]]
+	then
+		# start app with sha256 password auth
+		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} -user ${GOHFS_USER} -hpass ${GOHFS_PASSWORD_RAW} ${GOHFS_ARGS}
+	else
+		# start app without password auth
+		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} ${GOHFS_ARGS}
+fi
