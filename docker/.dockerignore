@@ -1,0 +1,9 @@
+Dockerfile
+target
+log
+LICENSE.md
+README.md
+docker-compose.yml
+.git
+.gitignore
+.gitattributes
