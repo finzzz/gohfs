@@ -1,22 +1,32 @@
-FROM ghcr.io/linuxserver/baseimage-alpine:3.13
+FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic
 # set version label
 ARG BUILD_DATE
 ARG VERSION
 LABEL build_version="Version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="github.com/olofvndrhr"
 
-# environment settings
+# gohfs version
 ENV GOHFS_VERSION="0.1.2" \
 	GOHFS_PATH="/app/gohfs" \
-    LD_PRELOAD="/usr/lib/preloadable_libiconv.so"
+	GOHFS_ARCH="gohfs-linux-amd64"
+
+# environment settings
+ARG DEBIAN_FRONTEND="noninteractive"
+ENV HOME="/root" \
+	LANGUAGE="en_US.UTF-8" \
+	LANG="en_US.UTF-8" \
+	TERM="xterm"
 
 RUN \
  echo "**** install build packages ****" && \
- apk add --no-cache --virtual=build-dependencies --upgrade \
+ apt-get update && \
+ apt-get install -y --no-install-recommends \
 	autoconf \
 	file && \
  echo "**** install runtime packages ****" && \
- apk add --no-cache --upgrade \
+ apt-get update && \
+ apt-get install -y --no-install-recommends \
+	cron \
 	git \
 	curl \
 	wget \
@@ -26,15 +36,17 @@ RUN \
 	bzip2 \
 	unzip && \
  echo "**** cleanup ****" && \
- apk del --purge \
-	build-dependencies && \
+ apt-get purge --auto-remove -y && \
+ apt-get clean && \
  rm -rf \
-	/tmp/*
+	/tmp/* \
+	/var/lib/apt/lists/* \
+	/var/tmp/*
 
 # get gohfs
 RUN \
 	wget -O "${GOHFS_PATH}" \
-		https://github.com/finzzz/gohfs/releases/download/"${GOHFS_VERSION}"/gohfs-linux-amd64
+		https://github.com/finzzz/gohfs/releases/download/"${GOHFS_VERSION}"/"${GOHFS_ARCH}}"
 
 # copy local files
 COPY root/ /
