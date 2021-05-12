@@ -11,13 +11,12 @@ services:
     networks:
       - network1
     volumes:
-      - ./config:/config          # Folder where all config files reside
       - ./data:/data              # Data folder for gohfs to serve
     environment:
       - PUID=1000                 # Unix user ID to run the container as
       - PGID=1000                 # Unix group ID to run the container as
 #      - GOHFS_HOST=              # IP address on which the webserver listens (default: 0.0.0.0) 
-#      - GOHFS_PORT=              # Port on which the webserver listens (default: 8080) 
+#      - GOHFS_PORT=80             # Port on which the webserver listens (default: 8080) 
 #      - GOHFS_USER=              # Username for authentification (default: disabled)
 #      - GOHFS_PASSWORD=          # Sha256 hashed password for authentification (default: disabled)
 #      - GOHFS_PASSWORD_RAW=      # Raw (cleartext) password for authentification (default: disabled)
