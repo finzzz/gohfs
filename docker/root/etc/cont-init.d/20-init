@@ -1,22 +1,14 @@
 #!/usr/bin/with-contenv bash
 
-# create folders
-[[ ! -d /config/crontabs ]] && \
-	mkdir -p \
-		/config/crontabs
+# compromise solution until temp zip files are fixed
+chown abc:abc /
 
 # permissions
-chown -R abc:abc \
-	/config
 chown abc:abc  \
+	/data \
 	/app/gohfs
 chmod +x \
 	/app/gohfs
-
-# set cronjob
-[[ ! -f /config/crontabs/root ]] && \
-	cp /defaults/root /config/crontabs/root
-cp /config/crontabs/root /etc/crontabs/root
 
 # set env variables
 GOHFS_HOST=${GOHFS_HOST:-0.0.0.0}
@@ -28,15 +20,18 @@ GOHFS_ARGS=${GOHFS_ARGS:-}
 
 # start app
 # check if user and password variables are set
-if [[ -n "$GOHFS_USER" ] && [ -n "$GOHFS_PASSWORD" ]]
+if [[ -n "$GOHFS_USER" ]] && [[ -n "$GOHFS_PASSWORD" ]]
 	then
 		# start app with sha256 password auth
+		exec s6-setuidgid abc \
 		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} -user ${GOHFS_USER} -hpass ${GOHFS_PASSWORD} ${GOHFS_ARGS}
-elif [[ -n "$GOHFS_USER" ] && [ -n "$GOHFS_PASSWORD_RAW" ]]
+elif [[ -n "$GOHFS_USER" ]] && [[ -n "$GOHFS_PASSWORD_RAW" ]]
 	then
 		# start app with sha256 password auth
+		exec s6-setuidgid abc \
 		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} -user ${GOHFS_USER} -hpass ${GOHFS_PASSWORD_RAW} ${GOHFS_ARGS}
 	else
 		# start app without password auth
+		exec s6-setuidgid abc \
 		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} ${GOHFS_ARGS}
 fi

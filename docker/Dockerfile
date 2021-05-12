@@ -26,7 +26,6 @@ RUN \
  echo "**** install runtime packages ****" && \
  apt-get update && \
  apt-get install -y --no-install-recommends \
-	cron \
 	git \
 	curl \
 	wget \
@@ -34,6 +33,7 @@ RUN \
 	sudo \
 	tar \
 	bzip2 \
+	zip \
 	unzip && \
  echo "**** cleanup ****" && \
  apt-get purge --auto-remove -y && \
