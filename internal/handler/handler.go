@@ -123,7 +123,18 @@ func (h HandlerObj) zipHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	z := utils.ZipWrite(h.Config.Dir + strings.TrimPrefix(link, h.Config.ZipPath))
+	link = h.Config.Dir + strings.TrimPrefix(link, h.Config.ZipPath)
+
+	// handle not found and dir not containing trailing slash
+	info, err := os.Stat(link)
+	if os.IsNotExist(err) {
+		log.Printf("%s not found\n", link)
+		return
+	} else if info.IsDir() && ! strings.HasSuffix(link, "/") {
+		link += "/"
+	}
+
+	z := utils.ZipWrite(link)
 
 	w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(link) + ".zip")
 	http.ServeFile(w, r, z)
