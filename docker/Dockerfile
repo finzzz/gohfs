@@ -46,7 +46,7 @@ RUN \
 # get gohfs
 RUN \
 	wget -O "${GOHFS_PATH}" \
-		https://github.com/finzzz/gohfs/releases/download/"${GOHFS_VERSION}"/"${GOHFS_ARCH}}"
+		https://github.com/finzzz/gohfs/releases/download/"${GOHFS_VERSION}"/"${GOHFS_ARCH}"
 
 # copy local files
 COPY root/ /
