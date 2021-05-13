@@ -61,7 +61,6 @@ mkdir -p \
 	/app \
 	/config \
 	/defaults && \
-mv /usr/bin/with-contenv /usr/bin/with-contenvb && \
 echo "**** cleanup ****" && \
 apt-get purge --auto-remove -y && \
 apt-get clean && \
