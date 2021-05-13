@@ -7,7 +7,7 @@ LABEL build_version="Version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="github.com/olofvndrhr"
 
 # gohfs version
-ARG GOHFS_VERSION="0.1.2"
+ARG GOHFS_VERSION="0.1.3"
 ARG	GOHFS_ARCH="gohfs-linux-amd64"
 ARG	GOHFS_PATH="/app/gohfs"
 
