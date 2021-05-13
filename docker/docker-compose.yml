@@ -9,19 +9,20 @@ services:
     ports:
       - 8080:8080
     networks:
-      - network1
+      - webserver
     volumes:
       - ./data:/data              # Data folder for gohfs to serve
     environment:
-      - PUID=1000                 # Unix user ID to run the container as
-      - PGID=1000                 # Unix group ID to run the container as
+      - PUID=1000                 # Unix user ID to run the container as (default 911)
+      - PGID=1000                 # Unix group ID to run the container as (default 911)
 #      - GOHFS_HOST=              # IP address on which the webserver listens (default: 0.0.0.0) 
 #      - GOHFS_PORT=              # Port on which the webserver listens (default: 8080) 
 #      - GOHFS_USER=              # Username for authentification (default: disabled)
 #      - GOHFS_PASSWORD=          # Sha256 hashed password for authentification (default: disabled)
 #      - GOHFS_PASSWORD_RAW=      # Raw (cleartext) password for authentification (default: disabled)
-#      - GOHFS_ARGS=              # Additional gohfs command-line arguments (e.g. -tls)
+#      - GOHFS_MAXUP=             # Maximum upload size in Bytes (default -1)
+#      - GOHFS_ARGS=              # Additional gohfs command-line arguments, separated with spaces (e.g. "-dz -du -dl")
       
 networks:
-  network1:
-    external: true
+  webserver:
+    driver: bridge
