@@ -19,7 +19,9 @@ type Config struct {
 	WebPath			string
 	ZipPath			string
 	SHA1Path		string
-	Hide			bool
+	DisableListing	bool
+	DisableZip		bool
+	DisableUp		bool
 	Web				embed.FS
 }
 
@@ -37,7 +39,7 @@ func ParseConf(config *Config) {
 	flag.StringVar(&config.KeyPem, "key", "", "Private certificate")
 
 	// auth
-	flag.StringVar(&config.User, "user", "admin", "Username (default: admin)")
+	flag.StringVar(&config.User, "user", "admin", "Username")
 	flag.StringVar(&config.Pass, "pass", "", "Password")
 	flag.StringVar(&config.HashedPass, "hpass", "", "Hashed Password (sha-256)")
 
@@ -47,7 +49,9 @@ func ParseConf(config *Config) {
 	flag.StringVar(&config.SHA1Path, "sha1path", "/gohfs-sha1", "SHA1 API")
 	
 	// disable feature
-	flag.BoolVar(&config.Hide, "hide", false, "Disable Listing")
+	flag.BoolVar(&config.DisableListing, "dl", false, "Disable Listing")
+	flag.BoolVar(&config.DisableZip, "dz", false, "Disable Zip")
+	flag.BoolVar(&config.DisableUp, "du", false, "Disable Upload")
 
 	flag.Parse()
 

@@ -27,10 +27,12 @@ Feature-rich HTTP File Server
     - [x] HTTPS
     - [x] Basic Auth
         - [x] Can store as hashed password
-    - [x] Can disable directory listing
-    - [ ] Can disable upload
-    - [ ] Can disable zip
     - [ ] Regex listing
+- Options
+    - [x] Disable directory listing
+    - [x] Disable upload
+    - [x] Disable zip
+    - [ ] Specify temporary zip folder
 - Others
     - [x] [Docker support](docker/README.md)
     - [ ] Log to file
@@ -38,7 +40,6 @@ Feature-rich HTTP File Server
     - [ ] Minify JS on build
     - [ ] Show version
     - [x] Specify ip, port, dir
-    - [ ] Can specify temporary zip folder
     - [ ] Replace linuxserver.io docker base image
 
 # Getting started
@@ -53,7 +54,7 @@ Feature-rich HTTP File Server
 ./gohfs -tls -cert selfsigned.cert -key selfsigned.key
 
 # disable directory listing
-./gohfs -hide
+./gohfs -dl
 
 # authentication
 ./gohfs -user gopher -pass gopher # raw password
@@ -61,6 +62,42 @@ Feature-rich HTTP File Server
 
 # getting help
 ./gohfs -h
+```
+
+# Full Usage
+```bash
+$ ./gohfs -h
+Usage of ./gohfs:
+  -cert string
+        Public certificate
+  -dir string
+        Directory to serve (default ".")
+  -dl
+        Disable Listing
+  -du
+        Disable Upload
+  -dz
+        Disable Zip
+  -host string
+        Host (default "0.0.0.0")
+  -hpass string
+        Hashed Password (sha-256)
+  -key string
+        Private certificate
+  -pass string
+        Password
+  -port string
+        Port (default "8080")
+  -sha1path string
+        SHA1 API (default "/gohfs-sha1")
+  -tls
+        Enable HTTPS
+  -user string
+        Username (default "admin")
+  -webpath string
+        UI API (default "/gohfs-web")
+  -zippath string
+        Zip API (default "/gohfs-zip")
 ```
 
 # Contribution

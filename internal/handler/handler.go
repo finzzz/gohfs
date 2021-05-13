@@ -52,6 +52,12 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
+	if h.Config.DisableUp {
+		fmt.Fprintln(w, `<script>alert("Upload is disabled!")</script>`)
+		return
+	}
+
+
 	file, fileHeader, err := r.FormFile("file")
 	if logger.LogErr("uploadHandler", err) {
 		return
@@ -101,7 +107,7 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 		SHA1Path	: h.Config.SHA1Path,
     }
 
-	if ! h.Config.Hide {
+	if ! h.Config.DisableListing {
 		templ.Dir = dir[:len(dir)-1]
 		templ.NItems = strconv.Itoa(len(files))
 
@@ -118,6 +124,11 @@ func (h HandlerObj) listingHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func (h HandlerObj) zipHandler(w http.ResponseWriter, r *http.Request) {
+	if h.Config.DisableZip {
+		fmt.Fprintln(w, `<script>alert("Zip is disabled!"); history.back()</script>`)
+		return
+	}
+
 	link, err := url.PathUnescape(r.RequestURI)
 	if logger.LogErr("zipHandler", err) {
 		return
