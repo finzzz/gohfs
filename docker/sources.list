@@ -1,0 +1,12 @@
+deb http://archive.ubuntu.com/ubuntu/ bionic main restricted
+deb-src http://archive.ubuntu.com/ubuntu/ bionic main restricted
+deb http://archive.ubuntu.com/ubuntu/ bionic-updates main restricted
+deb-src http://archive.ubuntu.com/ubuntu/ bionic-updates main restricted
+deb http://archive.ubuntu.com/ubuntu/ bionic universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ bionic universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ bionic-updates universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ bionic-updates universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ bionic-security main restricted
+deb-src http://archive.ubuntu.com/ubuntu/ bionic-security main restricted
+deb http://archive.ubuntu.com/ubuntu/ bionic-security universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ bionic-security universe multiverse

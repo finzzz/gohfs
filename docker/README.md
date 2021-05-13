@@ -3,7 +3,7 @@
 This project can be run in a Docker container, it exposes only port 8080 (default). It is advised 
 to run this configuration through a reverse proxy providing SSL if the service will be exposed over the internet, or use the integrated feature and provide gohfs with a valid certificate.
 
-Password authentification is disabled per default. To enable it set the required environment variables. You only have to set either "`GOHFS_PASSWORD`" or "`GOHFS_PASSWORD_RAW`".
+Password authentification is disabled per default. To enable it set the required environment variables. You only have to set either `GOHFS_PASSWORD` or `GOHFS_PASSWORD_RAW`.
 
 An minimal example run would be
 

@@ -18,13 +18,16 @@ ARG OVERLAY_ARCH="amd64"
 # environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV HOME="/root" \
-	LANGUAGE="en_US.UTF-8" \
-	LANG="en_US.UTF-8" \
-	TERM="xterm"
+LANGUAGE="en_US.UTF-8" \
+LANG="en_US.UTF-8" \
+TERM="xterm"
 
 # add s6 overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
 RUN chmod +x /tmp/s6-overlay-${OVERLAY_ARCH}-installer && /tmp/s6-overlay-${OVERLAY_ARCH}-installer / && rm /tmp/s6-overlay-${OVERLAY_ARCH}-installer
+
+# copy sources
+COPY sources.list /etc/apt/
 
 # add additional packages
 RUN \
@@ -68,16 +71,14 @@ rm -rf \
 	/var/tmp/*
 
 # add gohfs
-RUN \
-	wget -O ${GOHFS_PATH} \
-		https://github.com/finzzz/gohfs/releases/download/${GOHFS_VERSION}/${GOHFS_ARCH} && \
-	chmod +x ${GOHFS_PATH}
+ADD https://github.com/finzzz/gohfs/releases/download/${GOHFS_VERSION}/${GOHFS_ARCH} ${GOHFS_PATH}
+RUN chmod +x ${GOHFS_PATH}
 
 # copy local files
 COPY root/ /
 
 # ports and volumes
-EXPOSE 80
-VOLUME /config
+EXPOSE 8080
+VOLUME /data
 
 ENTRYPOINT ["/init"]
