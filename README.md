@@ -32,11 +32,14 @@ Feature-rich HTTP File Server
     - [ ] Can disable zip
     - [ ] Regex listing
 - Others
+    - [x] [Docker support](docker/README.md)
     - [ ] Log to file
     - [x] Compress binary
     - [ ] Minify JS on build
     - [ ] Show version
     - [x] Specify ip, port, dir
+    - [ ] Can specify temporary zip folder
+    - [ ] Replace linuxserver.io docker base image
 
 # Getting started
 ```bash
@@ -59,3 +62,9 @@ Feature-rich HTTP File Server
 # getting help
 ./gohfs -h
 ```
+
+# Contribution
+Like this project? Want to contribute? Awesome! Feel free to open some pull requests or just open an issue.
+
+# Changelog
+Detailed changes for each release are documented in the [release notes](https://github.com/finzzz/gohfs/releases).
