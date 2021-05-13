@@ -31,6 +31,27 @@ func IsDirPath(s string) (bool) {
 	return false
 }
 
+func CleanDirPath(s string) (string){
+	info, _ := os.Stat(s)
+	
+	if info.IsDir() && ! strings.HasSuffix(s, "/") {
+		s += "/"
+	}
+
+	return s
+}
+
+func IsDirExist(s string) (bool) {
+	_, err := os.Stat(s)
+
+	if os.IsNotExist(err) {
+		log.Printf("%s not found\n", s)
+		return false
+	}
+
+	return true
+}
+
 func Basename(s string) (string){
 	splits := strings.Split(s, "/")
 

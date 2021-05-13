@@ -32,7 +32,7 @@ Feature-rich HTTP File Server
     - [x] Disable directory listing
     - [x] Disable upload
     - [x] Disable zip
-    - [ ] Specify temporary zip folder
+    - [x] Specify temporary zip folder
 - Others
     - [x] [Docker support](docker/README.md)
     - [ ] Log to file
@@ -98,6 +98,8 @@ Usage of ./gohfs:
         UI API (default "/gohfs-web")
   -zippath string
         Zip API (default "/gohfs-zip")
+  -ziptemp string
+        Temporary Zip Folder (default ".")
 ```
 
 # Contribution

@@ -57,7 +57,6 @@ func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-
 	file, fileHeader, err := r.FormFile("file")
 	if logger.LogErr("uploadHandler", err) {
 		return
@@ -136,16 +135,15 @@ func (h HandlerObj) zipHandler(w http.ResponseWriter, r *http.Request) {
 
 	link = h.Config.Dir + strings.TrimPrefix(link, h.Config.ZipPath)
 
-	// handle not found and dir not containing trailing slash
-	info, err := os.Stat(link)
-	if os.IsNotExist(err) {
-		log.Printf("%s not found\n", link)
+	// handle dir not exist
+	if ! utils.IsDirExist(link) {
 		return
-	} else if info.IsDir() && ! strings.HasSuffix(link, "/") {
-		link += "/"
 	}
 
-	z := utils.ZipWrite(link)
+	// handle dir not containing trailing slash
+	link = utils.CleanDirPath(link)
+
+	z := utils.ZipWrite(link, utils.CleanDirPath(h.Config.ZipTemp))
 
 	w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(link) + ".zip")
 	http.ServeFile(w, r, z)

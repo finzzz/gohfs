@@ -6,8 +6,8 @@ import (
     "os"
 )
 
-func ZipWrite(s string) (string) {
-	tmpZip := RandStr(12) + ".zip"
+func ZipWrite(s, ziptemp string) (string) {
+	tmpZip := ziptemp + RandStr(12) + ".zip"
 
     outFile, err := os.Create(tmpZip)
     if err != nil {

@@ -4,6 +4,8 @@ import(
 	"flag"
 	"log"
 	"embed"
+
+	"gohfs/internal/utils"
 )
 
 type Config struct {
@@ -18,6 +20,7 @@ type Config struct {
 	HashedPass		string
 	WebPath			string
 	ZipPath			string
+	ZipTemp			string
 	SHA1Path		string
 	DisableListing	bool
 	DisableZip		bool
@@ -53,6 +56,9 @@ func ParseConf(config *Config) {
 	flag.BoolVar(&config.DisableZip, "dz", false, "Disable Zip")
 	flag.BoolVar(&config.DisableUp, "du", false, "Disable Upload")
 
+	// others
+	flag.StringVar(&config.ZipTemp, "ziptemp", ".", "Temporary Zip Folder")
+
 	flag.Parse()
 
 	if tls {
@@ -69,5 +75,9 @@ func VerifyConf(config Config) {
 
 	if config.Scheme == "https" && (config.CertPem == "" || config.KeyPem == "") {
 		log.Fatal(`Must specify both "-cert" and "-key" if HTTPS is enabled`)
+	}
+
+	if ! utils.IsDirExist(config.ZipTemp) {
+		log.Fatal(`Temporary Zip Folder doesn't exist`)
 	}
 }
