@@ -8,8 +8,8 @@ LABEL maintainer="github.com/olofvndrhr"
 
 # gohfs version
 ARG GOHFS_VERSION="0.1.3"
-ARG	GOHFS_ARCH="gohfs-linux-amd64"
-ARG	GOHFS_PATH="/app/gohfs"
+ARG GOHFS_ARCH="gohfs-linux-amd64"
+ARG GOHFS_PATH="/app/gohfs"
 
 # s6 overlay version
 ARG OVERLAY_VERSION="v2.2.0.3"
