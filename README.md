@@ -18,7 +18,7 @@ Feature-rich HTTP File Server
     - [x] Single file upload
     - [ ] Folder upload
     - [ ] Multi file upload
-    - [ ] Limit upload size
+    - [x] Limit upload size
 - Download
     - [x] as ZIP
     - [ ] Base64 encode
@@ -65,7 +65,7 @@ Feature-rich HTTP File Server
 ```
 
 # Full Usage
-```bash
+```
 $ ./gohfs -h
 Usage of ./gohfs:
   -cert string
@@ -73,17 +73,19 @@ Usage of ./gohfs:
   -dir string
         Directory to serve (default ".")
   -dl
-        Disable Listing
+        Disable listing
   -du
-        Disable Upload
+        Disable upload
   -dz
-        Disable Zip
+        Disable zip
   -host string
         Host (default "0.0.0.0")
   -hpass string
-        Hashed Password (sha-256)
+        Hashed password (sha-256)
   -key string
         Private certificate
+  -maxup int
+        Maximum upload size in Bytes (default -1)
   -pass string
         Password
   -port string
@@ -99,7 +101,7 @@ Usage of ./gohfs:
   -zippath string
         Zip API (default "/gohfs-zip")
   -ziptemp string
-        Temporary Zip Folder (default ".")
+        Temporary zip folder (default ".")
 ```
 
 # Contribution

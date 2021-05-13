@@ -58,6 +58,11 @@ func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	file, fileHeader, err := r.FormFile("file")
+	if h.Config.MaxUpload != -1 && int(fileHeader.Size) >= h.Config.MaxUpload {
+		fmt.Fprintln(w, `<script>alert("Upload rejected, maximum upload size exceeded!")</script>`)
+		return
+	}
+
 	if logger.LogErr("uploadHandler", err) {
 		return
 	}

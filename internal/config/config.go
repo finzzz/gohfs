@@ -22,6 +22,7 @@ type Config struct {
 	ZipPath			string
 	ZipTemp			string
 	SHA1Path		string
+	MaxUpload		int
 	DisableListing	bool
 	DisableZip		bool
 	DisableUp		bool
@@ -44,7 +45,7 @@ func ParseConf(config *Config) {
 	// auth
 	flag.StringVar(&config.User, "user", "admin", "Username")
 	flag.StringVar(&config.Pass, "pass", "", "Password")
-	flag.StringVar(&config.HashedPass, "hpass", "", "Hashed Password (sha-256)")
+	flag.StringVar(&config.HashedPass, "hpass", "", "Hashed password (sha-256)")
 
 	// api path
 	flag.StringVar(&config.WebPath, "webpath", "/gohfs-web", "UI API")
@@ -52,12 +53,13 @@ func ParseConf(config *Config) {
 	flag.StringVar(&config.SHA1Path, "sha1path", "/gohfs-sha1", "SHA1 API")
 	
 	// disable feature
-	flag.BoolVar(&config.DisableListing, "dl", false, "Disable Listing")
-	flag.BoolVar(&config.DisableZip, "dz", false, "Disable Zip")
-	flag.BoolVar(&config.DisableUp, "du", false, "Disable Upload")
+	flag.BoolVar(&config.DisableListing, "dl", false, "Disable listing")
+	flag.BoolVar(&config.DisableZip, "dz", false, "Disable zip")
+	flag.BoolVar(&config.DisableUp, "du", false, "Disable upload")
 
 	// others
-	flag.StringVar(&config.ZipTemp, "ziptemp", ".", "Temporary Zip Folder")
+	flag.StringVar(&config.ZipTemp, "ziptemp", ".", "Temporary zip folder")
+	flag.IntVar(&config.MaxUpload, "maxup", -1, "Maximum upload size in Bytes")
 
 	flag.Parse()
 
