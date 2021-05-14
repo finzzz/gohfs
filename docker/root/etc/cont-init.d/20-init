@@ -1,13 +1,8 @@
 #!/usr/bin/with-contenv bash
 
-# compromise solution until temp zip files are fixed
-chown abc:abc /
-
 # permissions
 chown abc:abc  \
 	/data \
-	/app/gohfs
-chmod +x \
 	/app/gohfs
 
 # set env variables
@@ -16,7 +11,13 @@ GOHFS_PORT=${GOHFS_PORT:-8080}
 GOHFS_USER=${GOHFS_USER:-}
 GOHFS_PASSWORD=${GOHFS_PASSWORD:-}
 GOHFS_PASSWORD_RAW=${GOHFS_PASSWORD_RAW:-}
+GOHFS_MAXUP=${GOHFS_MAXUP:--1}
 GOHFS_ARGS=${GOHFS_ARGS:-}
+
+# set default args for gohfs
+DEFAULT_ARGS=(	-dir /data
+				-ziptemp /tmp
+)
 
 # start app
 # check if user and password variables are set
@@ -24,14 +25,30 @@ if [[ -n "$GOHFS_USER" ]] && [[ -n "$GOHFS_PASSWORD" ]]
 	then
 		# start app with sha256 password auth
 		exec s6-setuidgid abc \
-		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} -user ${GOHFS_USER} -hpass ${GOHFS_PASSWORD} ${GOHFS_ARGS}
+		/app/gohfs ${DEFAULT_ARGS[@]} \
+					-host ${GOHFS_HOST} \
+					-port ${GOHFS_PORT} \
+					-maxup ${GOHFS_MAXUP} \
+					-user ${GOHFS_USER} \
+					-hpass ${GOHFS_PASSWORD} \
+						${GOHFS_ARGS}
 elif [[ -n "$GOHFS_USER" ]] && [[ -n "$GOHFS_PASSWORD_RAW" ]]
 	then
-		# start app with sha256 password auth
+		# start app with raw password auth
 		exec s6-setuidgid abc \
-		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} -user ${GOHFS_USER} -hpass ${GOHFS_PASSWORD_RAW} ${GOHFS_ARGS}
+		/app/gohfs ${DEFAULT_ARGS[@]} \
+					-host ${GOHFS_HOST} \
+					-port ${GOHFS_PORT} \
+					-maxup ${GOHFS_MAXUP} \
+					-user ${GOHFS_USER} \
+					-hpass ${GOHFS_PASSWORD_RAW} \
+						${GOHFS_ARGS}
 	else
 		# start app without password auth
 		exec s6-setuidgid abc \
-		/app/gohfs -dir /data -host ${GOHFS_HOST} -port ${GOHFS_PORT} ${GOHFS_ARGS}
+		/app/gohfs ${DEFAULT_ARGS[@]} \
+					-host ${GOHFS_HOST} \
+					-port ${GOHFS_PORT} \
+					-maxup ${GOHFS_MAXUP} \
+						${GOHFS_ARGS}
 fi
