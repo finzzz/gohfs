@@ -40,7 +40,6 @@ Feature-rich HTTP File Server
     - [ ] Minify JS on build
     - [ ] Show version
     - [x] Specify ip, port, dir
-    - [ ] Replace linuxserver.io docker base image
 
 # Getting started
 ```bash
