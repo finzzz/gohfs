@@ -22,19 +22,20 @@ The application will then serve the data from the /data directory, if permission
 
 Supportet environment variables
 -----
-| Name               | Description                                                               |
-| ------------------ | ------------------------------------------------------------------------- |
-| **Application**    |                                                                           |
-| PUID               | Unix user ID to run the container as                                      |
-| PGID               | Unix group ID to run the container as                                     |
-|                    |                                                                           |
-| GOHFS_HOST         | IP address on which the webserver listens *(default: 0.0.0.0)*            |
-| GOHFS_PORT         | Port on which the webserver listens *(default: 8080)*                     |
-| GOHFS_USER         | Username for authentification *(default: disabled)*                       |
-| GOHFS_PASSWORD     | Sha256 hashed password for authentification *(default: disabled/empty)*   |
-| GOHFS_PASSWORD_RAW | Raw (cleartext) password for authentification *(default: disabled/empty)* |
-| GOHFS_MAXUP        | Maximum upload size in Bytes *(default -1)*                               |
-| GOHFS_ARGS         | Additional gohfs command-line arguments *(e.g. `"-dz -du -dl"`)*          |
+| Name               | Description                                                                                |
+| ------------------ | ------------------------------------------------------------------------------------------ |
+| **Application**    |                                                                                            |
+| TZ                 | Time Zone for the container. Is shown in the Webinterface (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
+| PUID               | Unix user ID to run the container as                                                       |
+| PGID               | Unix group ID to run the container as                                                      |
+|                    |                                                                                            |
+| GOHFS_HOST         | IP address on which the webserver listens *(default: 0.0.0.0)*                             |
+| GOHFS_PORT         | Port on which the webserver listens *(default: 8080)*                                      |
+| GOHFS_USER         | Username for authentification *(default: disabled)*                                        |
+| GOHFS_PASSWORD     | Sha256 hashed password for authentification *(default: disabled/empty)*                    |
+| GOHFS_PASSWORD_RAW | Raw (cleartext) password for authentification *(default: disabled/empty)*                  |
+| GOHFS_MAXUP        | Maximum upload size in Bytes *(default -1)*                                                |
+| GOHFS_ARGS         | Additional gohfs command-line arguments *(e.g. `"-dz -du -dl"`)*                           |
 
 
 ### Contribution

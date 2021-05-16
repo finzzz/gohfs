@@ -13,6 +13,7 @@ services:
     volumes:
       - ./data:/data              # Data folder for gohfs to serve
     environment:
+      - TZ=Europe/Zurich          # Time Zone for the container (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
       - PUID=1000                 # Unix user ID to run the container as (default 911)
       - PGID=1000                 # Unix group ID to run the container as (default 911)
 #      - GOHFS_HOST=              # IP address on which the webserver listens (default: 0.0.0.0) 
