@@ -3,173 +3,209 @@
 	<head>
 		<link rel="shortcut icon" href="#"/>
 		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/style.css">
-		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/table.css">
-		<link type="text/css" rel="stylesheet" href="{{.WebPath}}/static/css/modal.css">
 	</head>
 	<body>
-		<h2>Directory : {{.Dir}}</h2>
+<div class="main">
+<!-- NAV -->
+<div class="nav">
+	<div class="path">
+		<button class="navbtn"><svg class="navicon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.854 1.146a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L4 2.707V12.5A2.5 2.5 0 0 0 6.5 15h8a.5.5 0 0 0 0-1h-8A1.5 1.5 0 0 1 5 12.5V2.707l3.146 3.147a.5.5 0 1 0 .708-.708l-4-4z"/></svg></button>
+		Directory : {{.Dir}}
+	</div>
+	<div class="filtersearch">
+		<input type=text class="filtersearchinput" placeholder="search or filter">
+		<button class="navbtn"><svg class="navicon" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg></button>
+		<button class="navbtn"><svg class="navicon" viewBox="0 0 16 16"><path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/></svg></button>
+	</div>
+</div>
+<!-- NAV -->
+
+<!-- ABOVETABLE -->
+<div class="abovetable">
+	<div class="commands">
 		<button class="btn" onclick="showModal('UploadModal')">Upload</button>
-		<div style="float: right; margin-right: 40px">{{.NItems}} items</div>
-		<table id="filetable">
-			<tr>
-				<th id="th_name" data-sortorder="1">
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('name')"/>Name
-				</th>
-				<th id="th_type" data-sortorder="1">
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('type')"/>Type
-				</th>
-				<th id="th_size" data-sortorder="1">
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('size','num')"/>Size
-				</th>
-				<th class="hide"></th>
-				<th id="th_modtime" data-sortorder="1">
-					<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('modtime','date')"/>Last Modified
-				</th>
-				<th class="hide"></th>
-				<th>
-					More Actions
-				</th>
-			</tr>
-            
-            {{range .Items}}
-			<tr>
-				<td><a href="{{.Name}}">{{.Name}}</a></td>
-                <td>{{.Type}}</td><td>{{.Size}}</td><td class="hide">{{.RawSize}}</td>
-                <td>{{.ModTime}}</td><td class="hide">{{.RawModTime}}</td>
-				<td>
-					<img class="more icon linksvg" src="" onclick="copyTextAsURL('{{.Name}}')"/>
-					<a class="more ziplink" name="{{.Name}}"><img class="more icon zipsvg" src=""/></a>
-					<img class="more icon qrsvg" src="" onclick="showQR('{{.Name}}')"/>
-					<img class="more icon termsvg" src="" onclick="setTerm('{{.Name}}')"/>
+	</div>
+	<div class="info">{{.NItems}} items</div>
+</div>
+<!-- ABOVETABLE -->
 
-					{{ if (eq .Type "File") }}
-					<a class="more sha1link" name="{{.Name}}"><img class="more icon hashsvg" src=""/></a>
-					{{ end }}
-				</td>
-			</tr>
-            {{end}}
-		</table>
+<!-- LISTING -->
+<div class="listing">
+	<table id="filetable">
+		<tr>
+			<th id="th_name" data-sortorder="1">
+				<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('name')"/>Name
+			</th>
+			<th id="th_type" data-sortorder="1">
+				<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('type')"/>Type
+			</th>
+			<th id="th_size" data-sortorder="1">
+				<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('size','num')"/>Size
+			</th>
+			<th class="hide"></th>
+			<th id="th_modtime" data-sortorder="1">
+				<img class=icon src="{{.WebPath}}/static/icons/sort.svg" onclick="sortTable('modtime','date')"/>Last Modified
+			</th>
+			<th class="hide"></th>
+			<th>
+				More Actions
+			</th>
+		</tr>
+		
+		{{range .Items}}
+		<tr>
+			<td><a href="{{.Name}}">{{.Name}}</a></td>
+			<td>{{.Type}}</td>
+			<td>{{.Size}}</td><td class="hide">{{.RawSize}}</td>
+			<td>{{.ModTime}}</td><td class="hide">{{.RawModTime}}</td>
+			<td>
+				<img class="more icon linksvg" src="" onclick="copyTextAsURL('{{.Name}}')"/>
+				<a class="more ziplink" name="{{.Name}}"><img class="more icon zipsvg" src=""/></a>
+				<img class="more icon qrsvg" src="" onclick="showQR('{{.Name}}')"/>
+				<img class="more icon termsvg" src="" onclick="setTerm('{{.Name}}')"/>
+				
+				{{ if (eq .Type "File") }}
+				<a class="more sha1link" name="{{.Name}}"><img class="more icon hashsvg" src=""/></a>
+				{{ end }}
+			</td>
+		</tr>
+		{{end}}
+	</table>
+</div>
+<!-- LISTING -->
 
-		<div id="QRModal" class="modal">
-			<span class="close" onclick="hideModal('QRModal')">&times;</span>
-			<div class=qr>
-				<div id="qrcode"></div>
-				<div id="caption" class="caption"></div>
+<!-- FOOTER -->
+<div class="footer">
+	<a href="https://github.com/finzzz/gohfs">GoHFS v0.1.4</a>
+</div>
+<!-- FOOTER -->
+</div>
+
+<!-- MODAL -->
+<div id="QRModal" class="modal">
+	<span class="close" onclick="hideModal('QRModal')">&times;</span>
+	<div class=qr>
+		<div id="qrcode"></div>
+		<div id="caption" class="caption"></div>
+	</div>
+	<div class=qr>
+		<div id="zipqrcode"></div>
+		<div id="zipcaption" class="caption"></div>
+	</div>
+</div>
+
+<div id="UploadModal" class="modal">
+	<span class="close" onclick="hideModal('UploadModal')">&times;</span>
+
+	<div class="uploaddiv">
+		<div class="upload">
+			<form ENCTYPE=multipart/form-data name=upload-form method=post>
+				<input name=file type="file"/>
+				<input class=btn type=submit value="Upload" onclick=submitForm()/>
+			</form>
+		</div>
+
+		<div class="uploadcmd">
+			<div class=termcmd>
+				<div class="termcmdname">Curl</div>
+				<div>
+					<code id=up_curl>curl -F 'file=@uploadthis.txt' {{.Scheme}}://{{.IP}}:{{.Port}}</code>
+					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_curl')"/>
+				</div>
 			</div>
-			<div class=qr>
-				<div id="zipqrcode"></div>
-				<div id="zipcaption" class="caption"></div>
-			</div>
-		</div>
-
-		<div id="UploadModal" class="modal">
-			<span class="close" onclick="hideModal('UploadModal')">&times;</span>
-
-			<div class="uploaddiv">
-				<div class="upload">
-					<form ENCTYPE=multipart/form-data name=upload-form method=post>
-						<input name=file type="file"/>
-						<input class=btn type=submit value="Upload" onclick=submitForm()/>
-					</form>
-				</div>
-	
-				<div class="uploadcmd">
-					<div class=termcmd>
-						<div class="termcmdname">Curl</div>
-						<div>
-							<code id=up_curl>curl -F 'file=@uploadthis.txt' {{.Scheme}}://{{.IP}}:{{.Port}}</code>
-							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_curl')"/>
-						</div>
-					</div>
-					<div class=termcmd>
-						<div class="termcmdname">Powershell</div>
-						<div>
-							<code id=up_ps>Invoke-RestMethod -Method Post -Form @{file=Get-Item -Path 'c:\path\to\uploadthis.txt'} -Uri {{.Scheme}}://{{.IP}}:{{.Port}}</code>
-							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_ps')"/>
-						</div>
-					</div>
+			<div class=termcmd>
+				<div class="termcmdname">Powershell</div>
+				<div>
+					<code id=up_ps>Invoke-RestMethod -Method Post -Form @{file=Get-Item -Path 'c:\path\to\uploadthis.txt'} -Uri {{.Scheme}}://{{.IP}}:{{.Port}}</code>
+					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('up_ps')"/>
 				</div>
 			</div>
 		</div>
+	</div>
+</div>
 
-		<div id="TermModal" class="modal">
-			<span class="close" onclick="hideModal('TermModal')">&times;</span>
-			<div class=termdiv>
-				<div id="file_only">
-					<h1 style="text-align: center;">Raw</h1>
-					<div class=termcmddiv>
-						<div class=termcmd>
-							<div class="termcmdname">Curl</div>
-							<div>
-								<code id=dl_curl></code>
-								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_curl')"/>
-							</div>
-						</div>
-						<div class=termcmd>
-							<div class="termcmdname">Wget</div>
-							<div>
-								<code id=wget></code>
-								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('wget')"/>
-							</div>
-						</div>
-						<div class=termcmd>
-							<div class="termcmdname">Powershell</div>
-							<div>
-								<code id=dl_ps1></code>
-								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_ps1')"/>
-							</div>
-						</div>
-						<div class=termcmd>
-							<div class="termcmdname">Powershell</div>
-							<div>
-								<code id=dl_ps2></code>
-								<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_ps2')"/>
-							</div>
-						</div>
+<div id="TermModal" class="modal">
+	<span class="close" onclick="hideModal('TermModal')">&times;</span>
+	<div class=termdiv>
+		<div id="file_only">
+			<h1 style="text-align: center;">Raw</h1>
+			<div class=termcmddiv>
+				<div class=termcmd>
+					<div class="termcmdname">Curl</div>
+					<div>
+						<code id=dl_curl></code>
+						<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_curl')"/>
 					</div>
 				</div>
-
-				<h1 style="text-align: center;">Zip</h1>
-				<div class=termcmddiv>
-					<div class=termcmd>
-						<div class="termcmdname">Curl</div>
-						<div>
-							<code id=dlzip_curl></code>
-							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_curl')"/>
-						</div>
-					</div>
-					<div class=termcmd>
-						<div class="termcmdname">Wget</div>
-						<div>
-							<code id=dlzip_wget></code>
-							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_wget')"/>
-						</div>
-					</div>
-					<div class=termcmd>
-						<div class="termcmdname">Powershell</div>
-						<div>
-							<code id=dlzip_ps1></code>
-							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_ps1')"/>
-						</div>
-					</div>
-					<div class=termcmd>
-						<div class="termcmdname">Powershell</div>
-						<div>
-							<code id=dlzip_ps2></code>
-							<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_ps2')"/>
-						</div>
+				<div class=termcmd>
+					<div class="termcmdname">Wget</div>
+					<div>
+						<code id=wget></code>
+						<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('wget')"/>
 					</div>
 				</div>
-			</div>	
+				<div class=termcmd>
+					<div class="termcmdname">Powershell</div>
+					<div>
+						<code id=dl_ps1></code>
+						<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_ps1')"/>
+					</div>
+				</div>
+				<div class=termcmd>
+					<div class="termcmdname">Powershell</div>
+					<div>
+						<code id=dl_ps2></code>
+						<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dl_ps2')"/>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="hide">
-			<p id="baseURL">{{.Scheme}}://{{.IP}}:{{.Port}}</p>
-			<p id="webPath">{{.WebPath}}</p>
-			<p id="zipPath">{{.ZipPath}}</p>
-			<p id="sha1Path">{{.SHA1Path}}</p>
+		<h1 style="text-align: center;">Zip</h1>
+		<div class=termcmddiv>
+			<div class=termcmd>
+				<div class="termcmdname">Curl</div>
+				<div>
+					<code id=dlzip_curl></code>
+					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_curl')"/>
+				</div>
+			</div>
+			<div class=termcmd>
+				<div class="termcmdname">Wget</div>
+				<div>
+					<code id=dlzip_wget></code>
+					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_wget')"/>
+				</div>
+			</div>
+			<div class=termcmd>
+				<div class="termcmdname">Powershell</div>
+				<div>
+					<code id=dlzip_ps1></code>
+					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_ps1')"/>
+				</div>
+			</div>
+			<div class=termcmd>
+				<div class="termcmdname">Powershell</div>
+				<div>
+					<code id=dlzip_ps2></code>
+					<img class=icon src="{{.WebPath}}/static/icons/clip.svg" onclick="copyTextById('dlzip_ps2')"/>
+				</div>
+			</div>
 		</div>
-	<script src="{{.WebPath}}/static/js/app.js"></script>
-	<script src="{{.WebPath}}/static/js/qrcode.min.js"></script>
+	</div>	
+</div>
+<!-- MODAL -->
+
+<!-- HIDDEN -->
+<div class="hide">
+	<p id="baseURL">{{.Scheme}}://{{.IP}}:{{.Port}}</p>
+	<p id="webPath">{{.WebPath}}</p>
+	<p id="zipPath">{{.ZipPath}}</p>
+	<p id="sha1Path">{{.SHA1Path}}</p>
+</div>
+<!-- HIDDEN -->
+
+		<script src="{{.WebPath}}/static/js/app.js"></script>
+		<script src="{{.WebPath}}/static/js/qrcode.min.js"></script>
 	</body>
 </html>
