@@ -7,6 +7,7 @@ test:
 	go run cmd/gohfs/main.go
 
 compress:
-	upx releases/gohfs-linux-amd64
-	upx releases/gohfs-macos-amd64
-	upx releases/gohfs-amd64.exe
+	upx --ultra-brute releases/gohfs-linux-amd64
+	upx --ultra-brute releases/gohfs-macos-amd64
+	cp releases/gohfs-amd64.exe releases/gohfs-amd64-packed.exe
+	upx --ultra-brute releases/gohfs-amd64-packed.exe

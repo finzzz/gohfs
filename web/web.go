@@ -43,7 +43,7 @@ func Embed(cfg *config.Config){
 func ParseItem(info fs.FileInfo) Item {
 	tmp := Item{
 		Name: url.PathEscape(info.Name()),
-		ModTime: info.ModTime().Format(time.RFC1123),
+		ModTime: info.ModTime().Format(time.RFC822) + " (" + utils.RelativeTimeDiff(info.ModTime()) + ")",
 		RawModTime: info.ModTime().Format(time.RFC3339),
 	}
 

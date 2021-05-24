@@ -80,7 +80,7 @@ a:hover {
 
 .footer {
     width: 100%;
-    padding-top: 5px;
+    padding-top: 15px;
     text-align: center;
     color: #107d8e;
     font-weight: bold;
@@ -230,7 +230,7 @@ td {
 
 /* UPLOAD MODAL */
 .upload {
-    width: fit-content;
+    display: table;
     margin: auto;
 }
 
@@ -250,7 +250,7 @@ td {
 
 .qrcode {
     margin: 0 auto;
-    width: fit-content;
+    display: table;
 }
 
 .qrcaption {

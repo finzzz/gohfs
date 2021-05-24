@@ -9,7 +9,7 @@ Feature-rich HTTP File Server
     - [x] SHA1 checksum
     - [x] Command line cheatsheet (curl, wget, PS)
     - [ ] Hot reload
-    - [ ] Relative last modified
+    - [x] Relative timestamp
     - [ ] Regex filtering
 - Functionality
     - [ ] Send message to backend
