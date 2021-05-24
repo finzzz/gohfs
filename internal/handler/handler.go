@@ -48,6 +48,7 @@ func (h HandlerObj) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Disposition", "attachment")
 	http.ServeFile(w, r, h.Config.Dir + link)
 }
 
@@ -74,7 +75,7 @@ func (h HandlerObj) uploadHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	
-	fileBytes, err := io.ReadAll(file) // read content
+	fileBytes, _ := io.ReadAll(file) // read content
 	err = os.WriteFile( h.Config.Dir + r.RequestURI + fileHeader.Filename, fileBytes, 0644) // write to file
 	if logger.LogErr("uploadHandler", err) {
 		return
@@ -153,8 +154,6 @@ func (h HandlerObj) zipHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", "attachment; filename=" + utils.Basename(link) + ".zip")
 	http.ServeFile(w, r, z)
 	_ = os.Remove(z)
-
-	return
 }
 
 func (h HandlerObj) staticHandler(w http.ResponseWriter, r *http.Request) {
