@@ -53,7 +53,7 @@ a:hover {
 
     font-family: arial;
     line-height: 1.625;
-    /* color: #555; */
+    color: #555;
 }
 
 .nav {
@@ -105,13 +105,35 @@ a:hover {
 
 .navbtn {
     padding-top: 5px;
+    padding-left: 0px;
+    color: #17a2b8;
+    background-color: transparent;
+    border: 0px solid transparent;
+}
+
+.navbtn:hover {
+    color: #dc3545;
+    cursor: pointer;
+}
+
+.navbtn:active {
+    color: #107d8e;
 }
 
 .filtersearchinput {
-    line-height: 2.05em;
+    line-height: 1.7em;
     padding-left: 5px;
     padding-right: 5px;
-    vertical-align: top;
+    margin-right: 1px;
+    border: 1px solid;
+}
+
+.filtersearchbtn {
+    vertical-align: bottom;
+    border: 1px solid;
+    padding: 3px;
+    height: 2em;
+    color: #555;
 }
 /* NAV */
 
