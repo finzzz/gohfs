@@ -1,4 +1,8 @@
  /* ELEMENTS */
+body {
+    font-family: arial;
+}
+
 a {
     color: #17a2b8;
     text-decoration: none;
@@ -51,7 +55,6 @@ a:hover {
     margin-left: 20px;
     margin-right: 20px;
 
-    font-family: arial;
     line-height: 1.625;
     color: #555;
 }
@@ -96,6 +99,7 @@ a:hover {
 
 .filtersearch {
     float: right;
+    visibility: hidden;
 }
 
 .navicon {
@@ -144,6 +148,7 @@ a:hover {
 
 .info {
     float: right;
+    line-height: 0.5em;
 }
 /* ABOVETABLE */
 
@@ -189,20 +194,12 @@ td {
     height: 100%;
     background-color: rgba(255,255,255,0.9);
   }
-  
-.modal-content {
-    margin: auto;
-    display: block;
-}
 
-.caption {
-    margin: auto;
-    text-align: center;
-    padding: 10px 0;
-    max-width: 350px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.modal-content {
+    margin-left: 40px;
+    margin-right: 40px;
+    position: relative;
+    /* background-color: darkkhaki; */
 }
 
 @-webkit-keyframes zoom {
@@ -230,3 +227,67 @@ td {
   cursor: pointer;
 }
 /* MODAL */
+
+/* UPLOAD MODAL */
+.upload {
+    width: fit-content;
+    margin: auto;
+}
+
+.uploadterm {
+    width: 100%;
+    /* background-color: darkseagreen; */
+}
+/* UPLOAD MODAL */
+
+/* QR */
+.qr {
+    width: 50%;
+    float: left;
+    text-align: center;
+    padding-top: 10%;
+}
+
+.qrcode {
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.qrcaption {
+    text-align: center;
+    padding-top: 5px;
+}
+/* QR */
+
+/* TERM */
+.code {
+    background-color: #efefef;
+    padding: 0.75em;
+    min-width: 80%;
+    border: 1px solid;
+    height: 10px;
+    text-overflow: ellipsis;
+    pointer-events:none;
+}
+
+.termchild {
+    width: fit-content;
+    padding-left: 10%;
+    margin: auto;
+    min-width: 50%;
+}
+
+.termcmd {
+    padding-bottom: 20px;
+}
+
+#termtype {
+    text-align: center;
+    font-size: xx-large;
+}
+
+.termtype {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+/* TERM */

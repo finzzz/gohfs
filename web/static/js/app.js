@@ -23,27 +23,50 @@ function setTerm(url){
     dl_ps1 = "Invoke-WebRequest -OutFile '" + url + "' -Uri '" + link
     dl_ps2 = "(New-Object System.Net.WebClient).DownloadFile('" + link + "','" + url + "')"
 
-    document.getElementById("dl_curl").innerHTML = dl_curl
-    document.getElementById("wget").innerHTML = wget
-    document.getElementById("dl_ps1").innerHTML = dl_ps1
-    document.getElementById("dl_ps2").innerHTML = dl_ps2
+    document.getElementById("dl_curl").value = dl_curl
+    document.getElementById("wget").value = wget
+    document.getElementById("dl_ps1").value = dl_ps1
+    document.getElementById("dl_ps2").value = dl_ps2
     
     dlzip_curl = "curl -o " + url + ".zip " + ziplink
     dlzip_wget = "wget -O " + url + ".zip " + ziplink
     dlzip_ps1 = "Invoke-WebRequest -OutFile '" + url + ".zip' -Uri '" + ziplink
     dlzip_ps2 = "(New-Object System.Net.WebClient).DownloadFile('" + ziplink + "','" + url + ".zip')"
 
-    document.getElementById("dlzip_curl").innerHTML = dlzip_curl
-    document.getElementById("dlzip_wget").innerHTML = dlzip_wget
-    document.getElementById("dlzip_ps1").innerHTML = dlzip_ps1
-    document.getElementById("dlzip_ps2").innerHTML = dlzip_ps2
+    document.getElementById("dlzip_curl").value = dlzip_curl
+    document.getElementById("dlzip_wget").value = dlzip_wget
+    document.getElementById("dlzip_ps1").value = dlzip_ps1
+    document.getElementById("dlzip_ps2").value = dlzip_ps2
 
-    document.getElementById("file_only").style.display = ""
     if (document.getElementsByName(url).length < 2) {
-        document.getElementById("file_only").style.display = "none"
+        document.getElementById("term-raw").style.display = "none"
+        hideByClass("term-raw")
+        showByClass("term-zip")
+    } else {
+        document.getElementById("term-raw").style.display = "initial"
+        showByClass("term-raw")
+        hideByClass("term-zip")
     }
 
     showModal("TermModal")
+}
+
+function showByClass(cls) {
+    document.querySelectorAll("." + cls).forEach(a=>a.style.display = "initial");
+    dimById(cls)
+}
+
+function hideByClass(cls) {
+    document.querySelectorAll("." + cls).forEach(a=>a.style.display = "none");
+    undimById(cls)
+}
+
+function dimById(id) {
+    document.getElementById(id).style.color = "#17a2b8";
+}
+
+function undimById(id) {
+    document.getElementById(id).style.color = "#a0a0a0";
 }
 
 function setPath(path, cls) {
@@ -77,7 +100,7 @@ function copyTextAsURL(text) {
 
 function copyTextById(id) {
     tmp = document.createElement("textarea")
-    tmp.value = (document.getElementById(id)).innerHTML
+    tmp.value = (document.getElementById(id)).value
     copy(tmp)
 }
 
@@ -151,7 +174,7 @@ function sortTable(id, type) {
 
 function showModal(id) {
     modal = document.getElementById(id)
-    modal.style.display = "flex"
+    modal.style.display = "block"
 }
 
 function hideModal(id) {
