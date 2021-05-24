@@ -3,6 +3,7 @@ zipPath = document.getElementById("zipPath").innerHTML
 sha1Path = document.getElementById("sha1Path").innerHTML
 init()
 
+//// UI ////
 function init() {
     renderItems("linksvg", "static/icons/link.svg")
     renderItems("zipsvg", "static/icons/zip.svg")
@@ -51,24 +52,6 @@ function setTerm(url){
     showModal("TermModal")
 }
 
-function showByClass(cls) {
-    document.querySelectorAll("." + cls).forEach(a=>a.style.display = "initial");
-    dimById(cls)
-}
-
-function hideByClass(cls) {
-    document.querySelectorAll("." + cls).forEach(a=>a.style.display = "none");
-    undimById(cls)
-}
-
-function dimById(id) {
-    document.getElementById(id).style.color = "#17a2b8";
-}
-
-function undimById(id) {
-    document.getElementById(id).style.color = "#a0a0a0";
-}
-
 function setPath(path, cls) {
     link = document.getElementsByClassName(cls)
 
@@ -85,13 +68,23 @@ function renderItems(cls, url) {
         link.item(index).src = webPath.innerHTML + "/" + url
     });
 }
+//// UI ////
 
+//// NAV ////
+function up_one_dir(){
+    window.location.href = '../'
+}
+//// NAV ////
+
+//// UPLOAD ////
 function submitForm() {
     f = document.getElementsByName("upload-form")[0]
     f.submit()
     f.reset()
 }
+//// UPLOAD ////
 
+//// TERM ////
 function copyTextAsURL(text) {
     tmp = document.createElement("textarea")
     tmp.value = baseURL + location.pathname + text
@@ -111,6 +104,26 @@ function copy(val) {
     document.body.removeChild(val)
 }
 
+function showByClass(cls) {
+    document.querySelectorAll("." + cls).forEach(a=>a.style.display = "initial");
+    dimById(cls)
+}
+
+function hideByClass(cls) {
+    document.querySelectorAll("." + cls).forEach(a=>a.style.display = "none");
+    undimById(cls)
+}
+
+function dimById(id) {
+    document.getElementById(id).style.color = "#17a2b8";
+}
+
+function undimById(id) {
+    document.getElementById(id).style.color = "#a0a0a0";
+}
+//// TERM ////
+
+//// TABLE ////
 function getCellIdx(id) {
     if (id == "size" || id == "modtime") {
         return document.getElementById("th_"+id).cellIndex + 1
@@ -171,7 +184,9 @@ function sortTable(id, type) {
 
     header.setAttribute("data-sortorder", Number(sortorder) * -1)
 }
+//// TABLE ////
 
+//// MODAL ////
 function showModal(id) {
     modal = document.getElementById(id)
     modal.style.display = "block"
@@ -202,3 +217,4 @@ function showQR(url) {
     qrcode.makeCode(link)
     zipqrcode.makeCode(ziplink)
 }
+//// MODAL ////
