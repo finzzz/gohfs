@@ -8,20 +8,20 @@ Feature-rich HTTP File Server
     - [x] Show QR Link
     - [x] SHA1 checksum
     - [x] Command line cheatsheet (curl, wget, PS)
-    - [ ] Hot reload
     - [x] Relative timestamp
+    - [ ] Hot reload
     - [ ] Regex filtering
 - Functionality
-    - [ ] Send message to backend
+    - [ ] Web shell
     - [ ] Global search using fzf
 - Upload
     - [x] Single file upload
-    - [ ] Folder upload
-    - [ ] Multi file upload
     - [x] Limit upload size
+    - [ ] Multi file upload
+    - [ ] Folder upload
 - Download
     - [x] as ZIP
-    - [ ] Base64 encode
+    - [ ] as Base64
     - [ ] Multi file download
 - Security
     - [x] HTTPS
@@ -35,11 +35,9 @@ Feature-rich HTTP File Server
     - [x] Specify temporary zip folder
 - Others
     - [x] [Docker support](docker/README.md)
-    - [ ] Log to file
     - [x] Compress binary
+    - [ ] Log to file
     - [ ] Minify JS on build
-    - [ ] Show version
-    - [x] Specify ip, port, dir
 
 # Getting started
 ```bash
