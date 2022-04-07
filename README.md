@@ -3,6 +3,9 @@ Feature-rich HTTP File Server
 
 ![](https://raw.githubusercontent.com/finzzz/images/master/gohfs.png)
 
+# Announcements
+As I keep getting busier, I find it hard to make time continuing this project. I will be looking into this project again in the future.
+
 # Features and roadmap
 - UI
     - [x] Show QR Link
